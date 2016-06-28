@@ -48,9 +48,9 @@ public class hangman {
             lives = 10;
             word = getRandWord();
             concealed = new Character[word.length()];
-            for (int i=0;i<concealed.length;i++) {
+            for (int i = 0; i < concealed.length; i++) {
                 concealed[i] = '⌴';
-                
+
                 concealedWord += '⌴';
             }
 
@@ -64,7 +64,7 @@ public class hangman {
         return ("Channel: " + channel.getName() + "\nWord: " + concealedWord + "\nLives: " + lives + "\nUsed Letters: " + hangman.getUsedLetters());
     }
 
-    public static void end(IUser user, boolean win) {
+    public static void endGame(IUser user, boolean win) {
 
         try {
             if (win) {
@@ -85,20 +85,15 @@ public class hangman {
         concealedWord = "";
     }
 
-
     public static void tryLetter(Character letter, IMessage message) {
         try {
-            System.out.println("10");
             if (!(letters.add(letter))) {
-                System.out.println("11");
                 message.reply(letter + " is already used");
             } else if (word.indexOf(letter) == -1) {
-                System.out.println("12");
                 lives--;
-                hangman.channel.sendMessage("The word does not contain " + letter+"\nLives: "+lives);
+                hangman.channel.sendMessage("The word does not contain " + letter + "\nLives: " + lives);
                 if (lives == 0) {
-                    System.out.println("13");
-                    hangman.end(message.getAuthor(), false);
+                    hangman.endGame(message.getAuthor(), false);
                 }
             } else {
 
@@ -106,25 +101,22 @@ public class hangman {
                 int index;
                 while (true) {
                     index = word.indexOf(letter, previndex);
-                    if (index==-1){
-                        System.out.println(15);
+                    if (index == -1) {
                         break;
                     }
                     concealed[index] = letter;
-                    previndex = index+1;
-                    if (previndex>=concealed.length){
-                        System.out.println(15.5);
+                    previndex = index + 1;
+                    if (previndex >= concealed.length) {
                         break;
                     }
                 }
                 concealedWord = "";
-                for (int i=0;i<concealed.length;i++) {
+                for (int i = 0; i < concealed.length; i++) {
                     concealedWord += concealed[i];
                 }
                 hangman.channel.sendMessage("The word contains " + letter + "\n" + hangman.info());
                 if (word.equals(concealedWord)) {
-                    System.out.println("16");
-                    hangman.end(message.getAuthor(), true);
+                    hangman.endGame(message.getAuthor(), true);
                 }
             }
 

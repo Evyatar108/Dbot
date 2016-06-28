@@ -43,13 +43,12 @@ public class EventHandler {
 
     @EventSubscriber
     public void onMessageEvent(MessageReceivedEvent event) throws Exception {
-        System.out.println(event.getMessage().getAuthor().getName() + ": " + event.getMessage().getContent());
+        System.out.println("Guild: " + event.getMessage().getGuild() + " Channel: " + event.getMessage().getChannel() + " Message: " + event.getMessage().getAuthor().getName() + ": " + event.getMessage().getContent());
 
         if (mentionMe(event)) {
             if (!(event.getMessage().getChannel() instanceof IPrivateChannel)) {
 
                 String args[] = removeMentions(event.getMessage().getContent()).trim().split(" ");
-                System.out.println(args[0]);
                 for (int i = 0; i < args.length; i++) {
                     args[i] = args[i].toLowerCase();
                 }
@@ -90,8 +89,6 @@ public class EventHandler {
 
     private boolean handleCommand(MessageReceivedEvent event, String[] commands) {
         try {
-            for(int i=0;i<commands.length;i++)
-                System.out.println("Variable "+i+" : "+commands[i]);
             switch (commands[0]) {
                 case "help": {
                     //if 1. The command wasnt used before Or 2. 10 minutes passed
@@ -119,7 +116,6 @@ public class EventHandler {
                 case "sa": {
 
                     if (!hasCooldown(commands[0])) {
-                        System.out.println("0");
                         event.getMessage().reply(Resources.sa());
                         lastTimeUsed.put(commands[0], Instant.now());
                         return true;
@@ -132,42 +128,32 @@ public class EventHandler {
                 case "hangmanis": {
                     if (hangman.getState()) {
                         if ((commands.length > 1) && (hangman.isWord(commands[1]))) {
-                            hangman.end(event.getMessage().getAuthor(), true);
+                            hangman.endGame(event.getMessage().getAuthor(), true);
                         }
                     }
                 }
 
                 case "hangman": {
-                    System.out.println("1");
                     if ((commands.length < 2) || (commands[1].equals("help"))) {
-                        System.out.println("2");
                         if (!hasCooldown(commands[0])) {
-                            System.out.println("3");
                             event.getMessage().reply(hangman.hangmanHelp());
                             lastTimeUsed.put(commands[0], Instant.now());
                             break;
                         } else {
-                            System.out.println("4");
                             event.getMessage().reply(cooldownReply(commands[0]));
                             break;
                         }
                     } else if (commands[1].equals("start")) {
-                        System.out.println("5");
                         if (hangman.getState()) {
-                            System.out.println("6");
-                            event.getMessage().reply("Game is already in progress \n"+hangman.info());
+                            event.getMessage().reply("Game is already in progress \n" + hangman.info());
                             break;
                         } else {
-                            System.out.println("7");
                             hangman.start(event.getMessage().getChannel());
                             break;
                         }
-                        
 
                     } else if ((commands[1].matches("[a-z]")) && (commands[1].length() == 1)) {
-                        System.out.println("8");
                         if (hangman.getState()) {
-                            System.out.println("9");
                             hangman.tryLetter(commands[1].toCharArray()[0], event.getMessage());
                             break;
                         } else {
@@ -183,7 +169,7 @@ public class EventHandler {
 
                 }
                 default:
-                    event.getMessage().reply("Unrecognized command");
+                    event.getMessage().reply("\nUnrecognized command,\nuse help to see the list of commands");
 
             }
         } catch (Exception exc) {
