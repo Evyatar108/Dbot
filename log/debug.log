@@ -1,0 +1,93 @@
+2016-06-29 21:28:22,386 1188 [main] INFO  sx.blah.discord.Discord4J - Discord4J v2.5.0-SNAPSHOT
+2016-06-29 21:28:22,407 1209 [main] INFO  sx.blah.discord.Discord4J - A Java binding for the unofficial Discord API, forked from https://github.com/nerd/Discord4J. Copyright (c) 2016, Licensed under GNU GPLv2
+2016-06-29 21:28:24,670 3472 [main] DEBUG sx.blah.discord.Discord4J - Obtained gateway wss://gateway.discord.gg.
+2016-06-29 21:28:26,557 5359 [WebSocketClient@890545344-16] INFO  sx.blah.discord.Discord4J - Connected to the Discord Websocket v5
+2016-06-29 21:28:26,626 5428 [Request Builder Async Executor] DEBUG sx.blah.discord.Discord4J - Received heartbeat interval of 41250.
+2016-06-29 21:28:26,631 5433 [Request Builder Async Executor] INFO  sx.blah.discord.Discord4J - Connected to 1 guilds.
+2016-06-29 21:28:32,082 10884 [Request Builder Async Executor] DEBUG sx.blah.discord.Discord4J - Logged in as Junior (ID 196337656601378816).
+2016-06-29 21:28:32,766 11568 [WebSocketClient@890545344-16] DEBUG sx.blah.discord.Discord4J - New guild has been created/joined! "Socially Anxious People" with ID 165140401332813824.
+2016-06-29 21:28:32,811 11613 [WebSocketClient@890545344-16] DEBUG sx.blah.discord.Discord4J - Message from: Octomeow (183961787006189569) in channel ID 165140401332813824: It's a good way of using the group system
+2016-06-29 21:28:45,668 24470 [WebSocketClient@890545344-18] DEBUG sx.blah.discord.Discord4J - Message from: Octomeow (183961787006189569) in channel ID 165140401332813824: Because some people come but don't talk at all for example
+2016-06-29 21:29:02,291 41093 [Discord4J WebSocket Heartbeat Executor] DEBUG sx.blah.discord.Discord4J - Sending keep alive... (1467224942291). Took 41251 ms.
+2016-06-29 21:29:03,321 42123 [WebSocketClient@890545344-15] DEBUG sx.blah.discord.Discord4J - Message from: RevivingSociety (72474803092598784) in channel ID 165140401332813824: yeah :c
+2016-06-29 21:29:05,931 44733 [Thread-1] DEBUG sx.blah.discord.Discord4J - Websocket disconnected. Exit Code: 1006. Reason: Harsh disconnect.
+2016-06-29 21:29:14,208 584  [main] INFO  sx.blah.discord.Discord4J - Discord4J v2.5.0-SNAPSHOT
+2016-06-29 21:29:14,225 601  [main] INFO  sx.blah.discord.Discord4J - A Java binding for the unofficial Discord API, forked from https://github.com/nerd/Discord4J. Copyright (c) 2016, Licensed under GNU GPLv2
+2016-06-29 21:29:16,094 2470 [main] DEBUG sx.blah.discord.Discord4J - Obtained gateway wss://gateway.discord.gg.
+2016-06-29 21:29:17,739 4115 [WebSocketClient@71706941-18] INFO  sx.blah.discord.Discord4J - Connected to the Discord Websocket v5
+2016-06-29 21:29:17,811 4187 [Request Builder Async Executor] DEBUG sx.blah.discord.Discord4J - Received heartbeat interval of 41250.
+2016-06-29 21:29:17,811 4187 [Request Builder Async Executor] INFO  sx.blah.discord.Discord4J - Connected to 1 guilds.
+2016-06-29 21:29:23,434 9810 [Request Builder Async Executor] DEBUG sx.blah.discord.Discord4J - Logged in as Junior (ID 196337656601378816).
+2016-06-29 21:29:23,793 10169 [WebSocketClient@71706941-18] DEBUG sx.blah.discord.Discord4J - New guild has been created/joined! "Socially Anxious People" with ID 165140401332813824.
+2016-06-29 21:29:23,853 10229 [WebSocketClient@71706941-18] DEBUG sx.blah.discord.Discord4J - Message from: Octomeow (183961787006189569) in channel ID 165140401332813824: Yep ^-^
+2016-06-29 21:29:23,882 10258 [WebSocketClient@71706941-18] DEBUG sx.blah.discord.Discord4J - Message from: LissaDaBunny (188438352616357888) in channel ID 165140401332813824: ah?
+2016-06-29 21:29:33,942 20318 [Thread-1] DEBUG sx.blah.discord.Discord4J - Websocket disconnected. Exit Code: 1006. Reason: Harsh disconnect.
+2016-06-29 21:30:14,005 603  [main] INFO  sx.blah.discord.Discord4J - Discord4J v2.5.0-SNAPSHOT
+2016-06-29 21:30:14,018 616  [main] INFO  sx.blah.discord.Discord4J - A Java binding for the unofficial Discord API, forked from https://github.com/nerd/Discord4J. Copyright (c) 2016, Licensed under GNU GPLv2
+2016-06-29 21:30:16,132 2730 [main] DEBUG sx.blah.discord.Discord4J - Obtained gateway wss://gateway.discord.gg.
+2016-06-29 21:30:17,966 4564 [WebSocketClient@71706941-20] INFO  sx.blah.discord.Discord4J - Connected to the Discord Websocket v5
+2016-06-29 21:30:18,033 4631 [Request Builder Async Executor] DEBUG sx.blah.discord.Discord4J - Received heartbeat interval of 41250.
+2016-06-29 21:30:18,034 4632 [Request Builder Async Executor] INFO  sx.blah.discord.Discord4J - Connected to 1 guilds.
+2016-06-29 21:30:23,697 10295 [Request Builder Async Executor] DEBUG sx.blah.discord.Discord4J - Logged in as Junior (ID 196337656601378816).
+2016-06-29 21:30:24,358 10956 [WebSocketClient@71706941-20] DEBUG sx.blah.discord.Discord4J - New guild has been created/joined! "Socially Anxious People" with ID 165140401332813824.
+2016-06-29 21:30:24,405 11003 [WebSocketClient@71706941-20] DEBUG sx.blah.discord.Discord4J - Message from: LissaDaBunny (188438352616357888) in channel ID 165140401332813824: :p alright
+2016-06-29 21:30:27,685 14283 [Thread-1] DEBUG sx.blah.discord.Discord4J - Websocket disconnected. Exit Code: 1006. Reason: Harsh disconnect.
+2016-06-29 21:30:59,999 597  [main] INFO  sx.blah.discord.Discord4J - Discord4J v2.5.0-SNAPSHOT
+2016-06-29 21:31:00,022 620  [main] INFO  sx.blah.discord.Discord4J - A Java binding for the unofficial Discord API, forked from https://github.com/nerd/Discord4J. Copyright (c) 2016, Licensed under GNU GPLv2
+2016-06-29 21:31:01,802 2400 [main] DEBUG sx.blah.discord.Discord4J - Obtained gateway wss://gateway.discord.gg.
+2016-06-29 21:31:03,847 4445 [WebSocketClient@71706941-16] INFO  sx.blah.discord.Discord4J - Connected to the Discord Websocket v5
+2016-06-29 21:31:03,882 4480 [Request Builder Async Executor] DEBUG sx.blah.discord.Discord4J - Received heartbeat interval of 41250.
+2016-06-29 21:31:03,883 4481 [Request Builder Async Executor] INFO  sx.blah.discord.Discord4J - Connected to 1 guilds.
+2016-06-29 21:31:09,503 10101 [Request Builder Async Executor] DEBUG sx.blah.discord.Discord4J - Logged in as Junior (ID 196337656601378816).
+2016-06-29 21:31:10,252 10850 [WebSocketClient@71706941-16] DEBUG sx.blah.discord.Discord4J - New guild has been created/joined! "Socially Anxious People" with ID 165140401332813824.
+2016-06-29 21:31:12,415 13013 [WebSocketClient@71706941-15] DEBUG sx.blah.discord.Discord4J - Message from: RevivingSociety (72474803092598784) in channel ID 194883629497843712: ya know i didn't use to take selfies until this
+2016-06-29 21:31:12,810 13408 [Thread-1] DEBUG sx.blah.discord.Discord4J - Websocket disconnected. Exit Code: 1006. Reason: Harsh disconnect.
+2016-06-29 21:32:19,186 645  [main] INFO  sx.blah.discord.Discord4J - Discord4J v2.5.0-SNAPSHOT
+2016-06-29 21:32:19,199 658  [main] INFO  sx.blah.discord.Discord4J - A Java binding for the unofficial Discord API, forked from https://github.com/nerd/Discord4J. Copyright (c) 2016, Licensed under GNU GPLv2
+2016-06-29 21:32:21,041 2500 [main] DEBUG sx.blah.discord.Discord4J - Obtained gateway wss://gateway.discord.gg.
+2016-06-29 21:32:22,691 4150 [WebSocketClient@71706941-20] INFO  sx.blah.discord.Discord4J - Connected to the Discord Websocket v5
+2016-06-29 21:32:22,786 4245 [Request Builder Async Executor] DEBUG sx.blah.discord.Discord4J - Received heartbeat interval of 41250.
+2016-06-29 21:32:22,786 4245 [Request Builder Async Executor] INFO  sx.blah.discord.Discord4J - Connected to 1 guilds.
+2016-06-29 21:32:28,057 9516 [Request Builder Async Executor] DEBUG sx.blah.discord.Discord4J - Logged in as Junior (ID 196337656601378816).
+2016-06-29 21:32:28,813 10272 [WebSocketClient@71706941-20] DEBUG sx.blah.discord.Discord4J - New guild has been created/joined! "Socially Anxious People" with ID 165140401332813824.
+2016-06-29 21:32:31,124 12583 [Thread-1] DEBUG sx.blah.discord.Discord4J - Websocket disconnected. Exit Code: 1006. Reason: Harsh disconnect.
+2016-06-29 21:32:47,317 590  [main] INFO  sx.blah.discord.Discord4J - Discord4J v2.5.0-SNAPSHOT
+2016-06-29 21:32:47,329 602  [main] INFO  sx.blah.discord.Discord4J - A Java binding for the unofficial Discord API, forked from https://github.com/nerd/Discord4J. Copyright (c) 2016, Licensed under GNU GPLv2
+2016-06-29 21:32:49,380 2653 [main] DEBUG sx.blah.discord.Discord4J - Obtained gateway wss://gateway.discord.gg.
+2016-06-29 21:32:51,068 4341 [WebSocketClient@71706941-16] INFO  sx.blah.discord.Discord4J - Connected to the Discord Websocket v5
+2016-06-29 21:32:51,089 4362 [Request Builder Async Executor] DEBUG sx.blah.discord.Discord4J - Received heartbeat interval of 41250.
+2016-06-29 21:32:51,090 4363 [Request Builder Async Executor] INFO  sx.blah.discord.Discord4J - Connected to 1 guilds.
+2016-06-29 21:32:56,795 10068 [Request Builder Async Executor] DEBUG sx.blah.discord.Discord4J - Logged in as Junior (ID 196337656601378816).
+2016-06-29 21:32:58,193 11466 [WebSocketClient@71706941-17] DEBUG sx.blah.discord.Discord4J - New guild has been created/joined! "Socially Anxious People" with ID 165140401332813824.
+2016-06-29 21:32:58,227 11500 [WebSocketClient@71706941-17] DEBUG sx.blah.discord.Discord4J - User "broby" changed presence to OFFLINE
+2016-06-29 21:33:10,738 24011 [WebSocketClient@71706941-15] DEBUG sx.blah.discord.Discord4J - User "RevivingSociety" changed status to GAME (name=Counter-Strike: Global Offensive, url=null).
+2016-06-29 21:33:27,874 41147 [Discord4J WebSocket Heartbeat Executor] DEBUG sx.blah.discord.Discord4J - Sending keep alive... (1467225207874). Took 41252 ms.
+2016-06-29 21:33:50,300 63573 [WebSocketClient@71706941-16] DEBUG sx.blah.discord.Discord4J - Message from: LissaDaBunny (188438352616357888) in channel ID 194883629497843712: :p
+2016-06-29 21:34:09,124 82397 [Discord4J WebSocket Heartbeat Executor] DEBUG sx.blah.discord.Discord4J - Sending keep alive... (1467225249123). Took 41238 ms.
+2016-06-29 21:34:22,317 95590 [WebSocketClient@71706941-18] DEBUG sx.blah.discord.Discord4J - User "DudeJuice" changed presence to ONLINE
+2016-06-29 21:34:23,705 96978 [WebSocketClient@71706941-18] DEBUG sx.blah.discord.Discord4J - Message from: TheLoneSnail (146778986398089217) in channel ID 194883629497843712: <@72474803092598784>  im glad you take selfies no, i enjoy them
+2016-06-29 21:34:27,668 100941 [WebSocketClient@71706941-17] DEBUG sx.blah.discord.Discord4J - Message from: TheLoneSnail (146778986398089217) in channel ID 194883629497843712: now
+2016-06-29 21:34:31,660 104933 [WebSocketClient@71706941-15] DEBUG sx.blah.discord.Discord4J - Message from: TheLoneSnail (146778986398089217) in channel ID 194883629497843712: omg my w key x-x
+2016-06-29 21:34:34,976 108249 [WebSocketClient@71706941-20] DEBUG sx.blah.discord.Discord4J - User "DSL" changed presence to OFFLINE
+2016-06-29 21:34:50,373 123646 [Discord4J WebSocket Heartbeat Executor] DEBUG sx.blah.discord.Discord4J - Sending keep alive... (1467225290373). Took 41231 ms.
+2016-06-29 21:34:50,554 123827 [WebSocketClient@71706941-16] DEBUG sx.blah.discord.Discord4J - User "Octomeow" changed status to GAME (name=(AFK), url=null).
+2016-06-29 21:35:10,168 143441 [WebSocketClient@71706941-19] DEBUG sx.blah.discord.Discord4J - User "Octomeow" changed status to GAME (name=Animal crossing New Leaf, url=null).
+2016-06-29 21:35:21,063 154336 [WebSocketClient@71706941-15] DEBUG sx.blah.discord.Discord4J - User "DSL" changed presence to ONLINE
+2016-06-29 21:35:25,972 159245 [WebSocketClient@71706941-20] DEBUG sx.blah.discord.Discord4J - User "Octomeow" changed status to GAME (name=AC : New Leaf, url=null).
+2016-06-29 21:35:31,624 164897 [Discord4J WebSocket Heartbeat Executor] DEBUG sx.blah.discord.Discord4J - Sending keep alive... (1467225331624). Took 41242 ms.
+2016-06-29 21:35:47,786 181059 [WebSocketClient@71706941-20] DEBUG sx.blah.discord.Discord4J - Message from: Mitroze (164851034613612544) in channel ID 194883629497843712: see ya <@183961787006189569>
+2016-06-29 21:35:56,753 190026 [WebSocketClient@71706941-14] DEBUG sx.blah.discord.Discord4J - Message from: Octomeow (183961787006189569) in channel ID 194883629497843712: Talk to you all later ^-^
+2016-06-29 21:36:02,211 195484 [WebSocketClient@71706941-19] DEBUG sx.blah.discord.Discord4J - Message from: RevivingSociety (72474803092598784) in channel ID 165140401332813824: aaaaaaaaaa someone spammed the user list with like, garbage accounts
+2016-06-29 21:36:12,873 206146 [Discord4J WebSocket Heartbeat Executor] DEBUG sx.blah.discord.Discord4J - Sending keep alive... (1467225372873). Took 41241 ms.
+2016-06-29 21:36:12,928 206201 [WebSocketClient@71706941-16] DEBUG sx.blah.discord.Discord4J - Message from: RevivingSociety (72474803092598784) in channel ID 165140401332813824: i had to make an email verification after that
+2016-06-29 21:36:27,604 220877 [WebSocketClient@71706941-14] DEBUG sx.blah.discord.Discord4J - User "Okami" changed presence to ONLINE
+2016-06-29 21:36:38,044 231317 [Thread-1] DEBUG sx.blah.discord.Discord4J - Websocket disconnected. Exit Code: 1006. Reason: Harsh disconnect.
+2016-06-29 21:36:40,313 647  [main] INFO  sx.blah.discord.Discord4J - Discord4J v2.5.0-SNAPSHOT
+2016-06-29 21:36:40,327 661  [main] INFO  sx.blah.discord.Discord4J - A Java binding for the unofficial Discord API, forked from https://github.com/nerd/Discord4J. Copyright (c) 2016, Licensed under GNU GPLv2
+2016-06-29 21:36:42,534 2868 [main] DEBUG sx.blah.discord.Discord4J - Obtained gateway wss://gateway.discord.gg.
+2016-06-29 21:36:44,301 4635 [WebSocketClient@71706941-17] INFO  sx.blah.discord.Discord4J - Connected to the Discord Websocket v5
+2016-06-29 21:36:44,360 4694 [Request Builder Async Executor] DEBUG sx.blah.discord.Discord4J - Received heartbeat interval of 41250.
+2016-06-29 21:36:44,360 4694 [Request Builder Async Executor] INFO  sx.blah.discord.Discord4J - Connected to 1 guilds.
+2016-06-29 21:36:49,961 10295 [Request Builder Async Executor] DEBUG sx.blah.discord.Discord4J - Logged in as Junior (ID 196337656601378816).
+2016-06-29 21:36:50,472 10806 [WebSocketClient@71706941-17] DEBUG sx.blah.discord.Discord4J - New guild has been created/joined! "Socially Anxious People" with ID 165140401332813824.
+2016-06-29 21:36:57,372 17706 [Thread-1] DEBUG sx.blah.discord.Discord4J - Websocket disconnected. Exit Code: 1006. Reason: Harsh disconnect.
