@@ -10,7 +10,6 @@ import java.util.Scanner;
 import java.util.logging.Logger;
 import sx.blah.discord.api.ClientBuilder;
 import sx.blah.discord.api.IDiscordClient;
-import sx.blah.discord.handle.obj.IChannel;
 
 /**
  *

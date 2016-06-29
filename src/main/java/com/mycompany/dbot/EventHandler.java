@@ -6,15 +6,12 @@
 package com.mycompany.dbot;
 
 import java.time.Instant;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.impl.events.MessageReceivedEvent;
 import sx.blah.discord.handle.impl.events.ReadyEvent;
-import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IPrivateChannel;
 
 /**
@@ -36,7 +33,7 @@ public class EventHandler {
         try {
             event.getClient().changeUsername("Junior");
         } catch (Exception exc) {
-            Bot.logger.log(Level.WARNING, "Failed to change nick: " + exc);
+            Bot.logger.log(Level.WARNING, "Failed to change nick: "+ exc);
         }
         //   doSomething();
     }

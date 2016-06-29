@@ -12,7 +12,6 @@ import java.util.Random;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.logging.Level;
-import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IUser;
