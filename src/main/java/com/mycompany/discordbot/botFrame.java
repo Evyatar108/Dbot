@@ -17,7 +17,7 @@ import sx.blah.discord.handle.obj.IGuild;
  * @author Evyatar M
  */
 public class botFrame extends javax.swing.JFrame {
-    
+
     private static IDiscordClient client;
     //   private static Map<String, Map<String, java.awt.TextArea>> guilds;
     private static Map<String, java.awt.TextArea> channels;
@@ -31,9 +31,9 @@ public class botFrame extends javax.swing.JFrame {
         this.client = client;
         initComponents();
         this.guildsPane.removeAll();
-        
+
     }
-    
+
     public void initiateTabs() {
         guildsArray = new String[client.getGuilds().size()][];
         channelsByGuild = new javax.swing.JTabbedPane[client.getGuilds().size()];
@@ -53,7 +53,7 @@ public class botFrame extends javax.swing.JFrame {
                 j++;
             }
             i++;
-            
+
         }
     }
 
@@ -173,7 +173,7 @@ public class botFrame extends javax.swing.JFrame {
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         try {
-            
+
             if (!client.isReady()) {
                 client = Dbot.login();
             }
