@@ -22,7 +22,7 @@ import sx.blah.discord.handle.obj.IPrivateChannel;
 public class EventHandler {
 
     Map<String, Instant> lastTimeUsed = new HashMap<String, Instant>();
-    int cooldown = 60;
+    int cooldown = 10;
     int cooldownLeft;
     int cooldownSeconds;
     int cooldownMinutes;
@@ -64,7 +64,7 @@ public class EventHandler {
     }
 
     private boolean hasCooldown(String command) {
-        if ((!lastTimeUsed.containsKey(command)) || (lastTimeUsed.get(command).plusSeconds(600).isBefore(Instant.now()))) {
+        if ((!lastTimeUsed.containsKey(command)) || (lastTimeUsed.get(command).plusSeconds(cooldown).isBefore(Instant.now()))) {
             return false;
         }
         return true;

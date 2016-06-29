@@ -31,7 +31,7 @@ public class hangman {
     private static IChannel channel;
 
     public static String hangmanHelp() {
-        return "\nhangman commands- \n__hangman start__- starts a new game if no game is active, with a random word\n__hangman *letter*__ (for example \"hangman a\" \n__hangman info__- gives you info about the current game \n__handmanin *word*- to try and guess if *word* is the solution";
+        return "\nhangman commands- \n__hangman start__- starts a new game if no game is active, with a random word\n__hangman info__- gives you info about the current game \n__hangman \\*letter\\*__ (for example \"hangman a\")  \n__hangmanis \\*word\\*__- to try and guess if \\*word\\* is the solution";
     }
 
     public static boolean getState() {
@@ -60,7 +60,7 @@ public class hangman {
     }
 
     public static String info() {
-        return ("Channel: " + channel.getName() + "\nWord: " + concealedWord + "\nLives: " + lives + "\nUsed Letters: " + hangman.getUsedLetters());
+        return ("\nChannel: " + channel.getName() + "\nWord: " + concealedWord + "\nLives: " + lives + "\nUsed Letters: " + hangman.getUsedLetters());
     }
 
     public static void endGame(IUser user, boolean win) {
