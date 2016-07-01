@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JOptionPane;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IGuild;
@@ -21,7 +20,7 @@ import sx.blah.discord.handle.obj.IGuild;
 public class botFrame extends javax.swing.JFrame {
 
     private static IDiscordClient client;
-    //   private static Map<String, Map<String, java.awt.TextArea>> guilds;
+ // private static Map<String, Map<String, java.awt.TextArea>> guilds;
     private static Map<String, java.awt.TextArea> channels;
     private static String[][] guildsArray;
     private static javax.swing.JTabbedPane[] channelsByGuild;

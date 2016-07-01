@@ -33,7 +33,6 @@ public class Dbot extends JFrame {
     public static IDiscordClient login() {
         try {
             logger.setLevel(Level.ALL);
-
             sc = new Scanner(new File("C:\\Bot\\Resources\\Token.txt"));
             token = sc.nextLine();
             client = new ClientBuilder().withToken(token).login();
@@ -61,8 +60,8 @@ public class Dbot extends JFrame {
 
     public static void addTextFrame(String channelID, String message) {
         logger.log(Level.INFO, "Dbot addTextFrame - handling");
-        if (frame!=null){
-        frame.addMessages(channelID, message);
+        if (frame != null) {
+            frame.addMessages(channelID, message);
         }
     }
 

@@ -13,7 +13,12 @@ import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.impl.events.DiscordDisconnectedEvent;
 import sx.blah.discord.handle.impl.events.MessageReceivedEvent;
 import sx.blah.discord.handle.impl.events.ReadyEvent;
+import sx.blah.discord.handle.obj.IChannel;
+import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IPrivateChannel;
+import sx.blah.discord.util.DiscordException;
+import sx.blah.discord.util.MissingPermissionsException;
+import sx.blah.discord.util.RequestBuffer;
 
 /**
  *
@@ -27,10 +32,10 @@ public class EventHandler {
     int cooldownSeconds;
     int cooldownMinutes;
 
-    //@EventSubscriber
-    //public void onDiscordDisconnectEvents(DiscordDisconnectedEvent event) {
-      //  Dbot.login();
-    //}
+    @EventSubscriber
+    public void onDiscordDisconnectEvents(DiscordDisconnectedEvent event) {
+        Dbot.login();
+    }
 
     @EventSubscriber
     public void onReadyEvent(ReadyEvent event) {
@@ -58,10 +63,15 @@ public class EventHandler {
     public void onMessageEvent(MessageReceivedEvent event) throws Exception {
         String message = ("Channel: " + event.getMessage().getChannel().getName() + "/n Message: " + event.getMessage().getAuthor().getName() + ": " + event.getMessage().getContent());
         System.out.println(message);
-    /*    //adding the message to the interface
+        //adding the message to the interface
 
         Dbot.addTextFrame(event.getMessage().getChannel().getID(), event.getMessage().getAuthor().getName() + ": " + event.getMessage().getContent());
         //check for mentions and then commands
+        if(mentionMe(event)){
+            if(event.getMessage().getAuthor().getID().equals("132466660870193153")){
+                sendReply(event.getMessage(),"I love you anon <3");
+            }
+        }
         if (isCommand(event)) {
             if (!(event.getMessage().getChannel() instanceof IPrivateChannel)) {
                 String[] args = extractCommands(event);
@@ -70,7 +80,7 @@ public class EventHandler {
                 }
             }
 
-        }   */
+        }
     }
 
     public static boolean isCommand(MessageReceivedEvent event) {
@@ -107,43 +117,37 @@ public class EventHandler {
     }
 
     private boolean handleCommand(MessageReceivedEvent event, String[] commands) {
-        try {
-            switch (commands[0]) {
-                case "!hm": {
-                    if (handleHangmanCommand(event, commands)) {
-                        return true;
-                    }
+        switch (commands[0]) {
+            case "!hm": {
+                if (handleHangmanCommand(event, commands)) {
+                    return true;
                 }
-                case "!ttt": {
-                    if (handleHangmanCommand(event, commands)) {
-                        return true;
-                    }
-                }
-                default:
-                    if (handleSimpleCommand(event, commands)) {
-                        return true;
-                    }
             }
-
-            event.getMessage().reply("\nUnrecognized command,\nuse !help to see the list of commands");
-
-        } catch (Exception exc) {
-            Dbot.logger.log(Level.INFO, "problem with command: " + commands[0] + " error: " + exc);
+            case "!ttt": {
+                if (handleTicTacToeCommand(event, commands)) {
+                    return true;
+                }
+            }
+            default:
+                if (handleSimpleCommand(event, commands)) {
+                    return true;
+                }
         }
+        sendReply(event.getMessage(), "\nUnrecognized command,\nuse !help to see the list of commands");
 
         return false;
     }
 
-    private boolean handleSimpleCommand(MessageReceivedEvent event, String[] commands) throws Exception {
+    private boolean handleSimpleCommand(MessageReceivedEvent event, String[] commands) {
         switch (commands[0]) {
             case "!help": {
                 //if 1. The command wasnt used before Or 2. 10 minutes passed
                 if (!hasCooldown(commands[0])) {
-                    event.getMessage().getChannel().sendMessage(Resources.help());
+                    sendMessage(event.getMessage().getChannel(), Resources.help());
                     lastTimeUsed.put(commands[0], Instant.now());
                     return true;
                 } else { //or tell the user how much cooldown is left
-                    event.getMessage().reply(cooldownReply(commands[0]));
+                    sendReply(event.getMessage(), cooldownReply(commands[0]));
                     return true;
                 }
 
@@ -151,11 +155,11 @@ public class EventHandler {
 
             case "!quote": {
                 if (!hasCooldown(commands[0])) {
-                    event.getMessage().getChannel().sendMessage(Resources.quotes());
+                    sendMessage(event.getMessage().getChannel(), Resources.quotes());
                     lastTimeUsed.put(commands[0], Instant.now());
                     return true;
                 } else { //or tell the user how much cooldown is left
-                    event.getMessage().getChannel().sendMessage(cooldownReply(commands[0])); //  ;
+                    sendMessage(event.getMessage().getChannel(), cooldownReply(commands[0]));
                     return true;
                 }
             }
@@ -163,11 +167,11 @@ public class EventHandler {
             case "!sa": {
 
                 if (!hasCooldown(commands[0])) {
-                    event.getMessage().getChannel().sendMessage(Resources.sa());
+                    sendMessage(event.getMessage().getChannel(), Resources.sa());
                     lastTimeUsed.put(commands[0], Instant.now());
                     return true;
                 } else { //or tell the user how much cooldown is left
-                    event.getMessage().getChannel().sendMessage(cooldownReply(commands[0]));
+                    sendMessage(event.getMessage().getChannel(), cooldownReply(commands[0]));
                     return true;
                 }
 
@@ -176,126 +180,157 @@ public class EventHandler {
             case "!board": {
 
                 if (!hasCooldown(commands[0])) {
-                    event.getMessage().getChannel().sendMessage(ticTacToe.board());
+                    sendMessage(event.getMessage().getChannel(), ticTacToe.board());
                     lastTimeUsed.put(commands[0], Instant.now());
                     return true;
                 } else { //or tell the user how much cooldown is left
-                    event.getMessage().getChannel().sendMessage(cooldownReply(commands[0]));
+                    sendMessage(event.getMessage().getChannel(), cooldownReply(commands[0]));
                     return true;
                 }
 
             }
-       }
+        }
         return false;
     }
 
-    private boolean handleHangmanCommand(MessageReceivedEvent event, String[] commands) throws Exception {
+    private boolean handleHangmanCommand(MessageReceivedEvent event, String[] commands) {
         if ((commands.length < 2) || (commands[1].equals("help"))) {
             if (!hasCooldown(commands[0])) {
-                event.getMessage().getChannel().sendMessage(hangman.help());
+                sendMessage(event.getMessage().getChannel(), hangman.help());
                 lastTimeUsed.put(commands[0], Instant.now());
                 return true;
             } else {
-                event.getMessage().reply(cooldownReply(commands[0]));
+                sendReply(event.getMessage(), cooldownReply(commands[0]));
                 return true;
             }
         } else if (commands[1].equals("start")) {
             if (hangman.getState()) {
-                event.getMessage().reply("Game is already in progress \n" + hangman.info());
+                sendReply(event.getMessage(), "Game is already in progress \n" + hangman.info());
                 return true;
             } else {
-                event.getMessage().getChannel().sendMessage(hangman.start(event.getMessage().getChannel()));
+                sendMessage(event.getMessage().getChannel(), hangman.start(event.getMessage().getChannel()));
                 return true;
             }
         } else if ((commands[1].matches("[a-z]")) && (commands[1].length() == 1)) {
             if (hangman.getState()) {
                 if (event.getMessage().getChannel().equals(hangman.getChannel())) {
-                    event.getMessage().getChannel().sendMessage(hangman.tryLetter(commands[1].toCharArray()[0], event.getMessage()));
+                    sendMessage(event.getMessage().getChannel(), hangman.tryLetter(commands[1].toCharArray()[0], event.getMessage()));
                     return true;
                 } else {
-                    event.getMessage().reply("The game is in channel " + hangman.getChannel().getName());
+                    sendReply(event.getMessage(), "The game is in channel " + hangman.getChannel().getName());
                 }
             } else {
-                event.getMessage().reply("Start a game first!");
+                sendReply(event.getMessage(), "Start a game first!");
+
                 return true;
             }
         } else if (commands[1].equals("info")) {
-            event.getMessage().getChannel().sendMessage(hangman.info());
+            sendMessage(event.getMessage().getChannel(), hangman.info());
             return true;
 
         } else if (commands[1].equals("leaderboard")) {
-            event.getMessage().getChannel().sendMessage(hangman.showLeaderboard(event.getClient()));
+            sendMessage(event.getMessage().getChannel(), hangman.showLeaderboard(event.getClient()));
             return true;
 
         } else if (hangman.getState()) {
             if ((commands.length > 1) && (hangman.isWord(commands[1]))) {
-                event.getMessage().getChannel().sendMessage(hangman.endGame(event.getMessage().getAuthor(), true));
+                sendMessage(event.getMessage().getChannel(), hangman.endGame(event.getMessage().getAuthor(), true));
                 return true;
             } else {
-                event.getMessage().reply("That's not the word");
+                sendReply(event.getMessage(), "That's not the word");
                 return true;
             }
         }
         return false;
     }
 
-    private boolean handleTicTacToeCommand(MessageReceivedEvent event, String[] commands) throws Exception {
+    private boolean handleTicTacToeCommand(MessageReceivedEvent event, String[] commands) {
         if ((commands.length < 2) || (commands[1].equals("help"))) {
             if (!hasCooldown(commands[0])) {
-                event.getMessage().getChannel().sendMessage(ticTacToe.help());
+                sendMessage(event.getMessage().getChannel(), ticTacToe.help());
                 lastTimeUsed.put(commands[0], Instant.now());
                 return true;
             } else {
-                event.getMessage().reply(cooldownReply(commands[0]));
+                sendReply(event.getMessage(), cooldownReply(commands[0]));
                 return true;
             }
         } else if (commands[1].equals("start")) {
             if (ticTacToe.getState()) {
-                event.getMessage().reply("\nGame is already in progress \n" + ticTacToe.info());
+
+                sendReply(event.getMessage(), "\nGame is already in progress \n" + ticTacToe.info());
                 return true;
             } else if ((!event.getMessage().getMentions().isEmpty()) && (commands.length == 3)) {
                 if (!event.getMessage().getAuthor().equals(event.getMessage().getMentions().get(0))) {
                     ticTacToe.start(event.getMessage().getAuthor(), event.getMessage().getMentions().get(0), event.getMessage().getChannel());
-                    event.getMessage().getChannel().sendMessage("Game started!\n" + ticTacToe.info());
+                    sendMessage(event.getMessage().getChannel(), "Game started!\n" + ticTacToe.info());
                     return true;
                 } else {
-                    event.getMessage().reply("You cant play with yourself");
+                    sendReply(event.getMessage(), "You are not allowed to play with yourself");
                     return true;
                 }
             } else {
-                event.getMessage().reply("Wrong parameters (example- \"!ttt start @mentionFriend\"");
+                sendReply(event.getMessage(), "Wrong parameters (example- \"!ttt start @mentionFriend\"");
                 return true;
             }
         } else if (commands[1].equals("info")) {
-            event.getMessage().getChannel().sendMessage(ticTacToe.info());
+
+            sendMessage(event.getMessage().getChannel(), ticTacToe.info());
             return true;
 
         } else if (commands[1].equals("abort")) {
-            event.getMessage().getChannel().sendMessage(ticTacToe.abort());
+            sendMessage(event.getMessage().getChannel(), ticTacToe.abort());
             return true;
 
         } else if (commands[1].equals("leaderboard")) {
-            event.getMessage().getChannel().sendMessage(ticTacToe.showLeaderboard(event.getClient()));
-            return true;
+            sendMessage(event.getMessage().getChannel(), ticTacToe.showLeaderboard(event.getClient()));
         } else if (ticTacToe.getState()) {
             if (event.getMessage().getChannel().equals(ticTacToe.getChannel())) {
                 if ((commands.length == 2) && (commands[1].equals("giveup"))) {
                     if (event.getMessage().getAuthor().equals(ticTacToe.getCurrentUser())) {
-                        event.getMessage().getChannel().sendMessage(ticTacToe.giveUp());
+                        sendMessage(event.getMessage().getChannel(), ticTacToe.giveUp());
                         return true;
                     } else if (event.getMessage().getAuthor().equals(ticTacToe.getOtherUser())) {
-                        event.getMessage().getChannel().sendMessage(ticTacToe.giveUpOther());
+                        sendMessage(event.getMessage().getChannel(), ticTacToe.giveUpOther());
                         return true;
                     }
                 } else if (event.getMessage().getAuthor().equals(ticTacToe.getCurrentUser())) {
 
                     if (commands.length == 3) {
-                        event.getMessage().getChannel().sendMessage(ticTacToe.turn(commands[1], commands[2]));
+                        sendMessage(event.getMessage().getChannel(), ticTacToe.turn(commands[1], commands[2]));
                         return true;
                     }
                 }
             }
         }
         return false;
+    }
+
+    private static void sendMessage(IChannel channel, String message) {
+        RequestBuffer.request(() -> {
+            try {
+                channel.sendMessage(message);
+            } catch (DiscordException e) { //| MissingPermissionsException e) {
+                e.printStackTrace();
+                sendMessage(channel, message);
+            } catch (MissingPermissionsException e) {
+                e.printStackTrace();
+            }
+            return null;
+        });
+
+    }
+
+    private static void sendReply(IMessage recipent, String message) {
+        RequestBuffer.request(() -> {
+            try {
+                recipent.reply(message);
+            } catch (DiscordException e) { //| MissingPermissionsException e) {
+                e.printStackTrace();
+                sendReply(recipent, message);
+            } catch (MissingPermissionsException e) {
+                e.printStackTrace();
+            }
+            return null;
+        });
     }
 }
