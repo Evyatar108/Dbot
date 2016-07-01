@@ -10,8 +10,14 @@ import com.google.code.chatterbotapi.ChatterBotFactory;
 import com.google.code.chatterbotapi.ChatterBotSession;
 import com.google.code.chatterbotapi.ChatterBotType;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.logging.Level;
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.impl.events.DiscordDisconnectedEvent;
@@ -19,8 +25,12 @@ import sx.blah.discord.handle.impl.events.MessageReceivedEvent;
 import sx.blah.discord.handle.impl.events.ReadyEvent;
 import sx.blah.discord.handle.impl.events.MentionEvent;
 import sx.blah.discord.handle.obj.IChannel;
+import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IPrivateChannel;
+import sx.blah.discord.handle.obj.IUser;
+import sx.blah.discord.handle.obj.Presences;
+import sx.blah.discord.handle.obj.Status;
 import sx.blah.discord.util.DiscordException;
 import sx.blah.discord.util.MessageBuilder;
 import sx.blah.discord.util.MissingPermissionsException;
@@ -38,6 +48,8 @@ public class EventHandler {
     int cooldownSeconds;
     int cooldownMinutes;
     ChatterBotSession botsession;
+    ChatterBotSession hiBotSession;
+    Map<String, ChatterBotSession> botSessions;
 
     @EventSubscriber
     public void onDiscordDisconnectEvents(DiscordDisconnectedEvent event) {
@@ -51,17 +63,43 @@ public class EventHandler {
 
         if (!Dbot.checkInitializedFrame()) {
             Dbot.setFrameClient();
-
+            botSessions = new HashMap<String, ChatterBotSession>();
         }
         try {
             ChatterBotFactory factory = new ChatterBotFactory();
             ChatterBot bot = factory.create(ChatterBotType.CLEVERBOT);
-            botsession = bot.createSession();
+            hiBotSession = bot.createSession();
+            Timer timer = new Timer();
+            timer.scheduleAtFixedRate(new TimerTask() {
+                @Override
+                public void run() {
+                    try {
+                        IChannel bottestCH = event.getClient().getChannelByID("183641161448161280");
+                        Object[] tempUserList = event.getClient().getGuildByID("165140401332813824").getUsers().toArray();
+                        IUser[] userList = Arrays.copyOf(tempUserList, tempUserList.length, IUser[].class);
+                        List<IUser> newUserList = new ArrayList<IUser>();
+                        for (IUser user : userList) {
+                            Presences pres = user.getPresence();
+                            if (pres.equals(Presences.ONLINE)) {
+                                newUserList.add(user);
+                            }
+                        }
+                        Random rand = new Random();
+                        IUser chosen = newUserList.get(rand.nextInt(newUserList.size()));
+                        String message = chosen.mention();
+                        message +=" "+hiBotSession.think("hi");
+                        sendMessage(bottestCH, message);
+                    } catch (Exception exc) {
+                        Dbot.logger.log(Level.WARNING, "inside error hi message: " + exc);
+                    }
+
+                }
+            }, 4*60 * 1000, 4 * 60 * 60 * 1000);
+           
         } catch (Exception exc) {
-            Dbot.logger.log(Level.SEVERE, exc.toString());
+            Dbot.logger.log(Level.WARNING, "outside error hi message: " + exc);
         }
         //  event.getClient().changeUsername("Junior");
-
         //   doSomething();
     }
 
@@ -86,12 +124,25 @@ public class EventHandler {
             public void run() {
 
                 try {
+                    Thread.sleep(1500);
                     event.getMessage().getChannel().toggleTypingStatus();
-                    Thread.sleep(3000);
+                    Thread.sleep(4000);
                     if (event.getMessage().getAuthor().getID().equals("132466660870193153")) {
                         sendMessage(event.getMessage().getChannel(), Resources.love(event.getMessage().getAuthor().getName()));
                     } else {
-                        String botMessage = removeMentions(event.getMessage().getContent());
+                        String botMessage = replaceMentions(event.getMessage().getContent());
+                        if (botSessions.containsKey(event.getMessage().getAuthor().getID())) {
+                            botsession = botSessions.get(event.getMessage().getAuthor().getID());
+                        } else {
+                            try {
+                                ChatterBotFactory factory = new ChatterBotFactory();
+                                ChatterBot bot = factory.create(ChatterBotType.CLEVERBOT);
+                                botsession = bot.createSession();
+                                botSessions.put(event.getMessage().getAuthor().getID(), botsession);
+                            } catch (Exception exc) {
+                                Dbot.logger.log(Level.SEVERE, exc.toString());
+                            }
+                        }
                         sendReply(event.getMessage(), botsession.think(botMessage));
                     }
                 } catch (Exception exc) {
@@ -155,6 +206,11 @@ public class EventHandler {
 
     private String removeMentions(String message) {
         return message.replaceAll("[<][@][!][0-9]{18}[>]", "");
+    }
+
+    private String replaceMentions(String message) {
+        message = message.replaceFirst("[<][@][!][0-9]{18}[>]", "");
+        return message.replaceAll("[<][@][!][0-9]{18}[>]", "my friend");
     }
 
     private boolean handleCommand(MessageReceivedEvent event, String[] commands) {
