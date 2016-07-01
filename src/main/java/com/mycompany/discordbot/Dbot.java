@@ -66,10 +66,10 @@ public class Dbot extends JFrame {
 
     public static void addTextFrame(String channelID, String message) {
         logger.log(Level.INFO, "Dbot addTextFrame - handling");
-        if(frame.initializedTabs()){
+        if (frame.initializedTabs()) {
             frame.addMessages(channelID, message);
         }
-        
+
     }
 
     public static void run() {

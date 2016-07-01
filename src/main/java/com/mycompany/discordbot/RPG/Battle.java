@@ -10,11 +10,9 @@ package com.mycompany.discordbot.RPG;
  * @author Evyatar M
  */
 public class Battle {
-    
-    public Battle(Player firstP,Player secondP){
-        
-        
-        
+
+    public Battle(Player firstP, Player secondP) {
+
     }
-    
+
 }

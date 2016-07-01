@@ -5,6 +5,10 @@
  */
 package com.mycompany.discordbot;
 
+import com.google.code.chatterbotapi.ChatterBot;
+import com.google.code.chatterbotapi.ChatterBotFactory;
+import com.google.code.chatterbotapi.ChatterBotSession;
+import com.google.code.chatterbotapi.ChatterBotType;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
@@ -33,6 +37,7 @@ public class EventHandler {
     int cooldownLeft;
     int cooldownSeconds;
     int cooldownMinutes;
+    ChatterBotSession botsession;
 
     @EventSubscriber
     public void onDiscordDisconnectEvents(DiscordDisconnectedEvent event) {
@@ -48,6 +53,13 @@ public class EventHandler {
             Dbot.setFrameClient();
 
         }
+        try {
+            ChatterBotFactory factory = new ChatterBotFactory();
+            ChatterBot bot = factory.create(ChatterBotType.CLEVERBOT);
+            botsession = bot.createSession();
+        } catch (Exception exc) {
+            Dbot.logger.log(Level.SEVERE, exc.toString());
+        }
         //  event.getClient().changeUsername("Junior");
 
         //   doSomething();
@@ -55,7 +67,7 @@ public class EventHandler {
 
     public String[] extractCommands(MessageReceivedEvent event) {
         String content = event.getMessage().getContent();
-        while(content.contains("  ")){
+        while (content.contains("  ")) {
             content = content.replaceAll("  ", " ");
         }
         String args[] = content.trim().split(" ");
@@ -67,12 +79,32 @@ public class EventHandler {
 
     @EventSubscriber
     public void onMentionEvent(MentionEvent event) {
-        if (event.getMessage().getAuthor().getID().equals("132466660870193153")) {
-            sendMessage(event.getMessage().getChannel(), Resources.love(event.getMessage().getAuthor().getName()));
-        }
+        String botMessage;
+
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                try {
+                    event.getMessage().getChannel().toggleTypingStatus();
+                    Thread.sleep(3000);
+                    if (event.getMessage().getAuthor().getID().equals("132466660870193153")) {
+                        sendMessage(event.getMessage().getChannel(), Resources.love(event.getMessage().getAuthor().getName()));
+                    } else {
+                        String botMessage = removeMentions(event.getMessage().getContent());
+                        sendReply(event.getMessage(), botsession.think(botMessage));
+                    }
+                } catch (Exception exc) {
+                    Dbot.logger.log(Level.WARNING, "Failed to send bot message" + exc.toString());
+                }
+            }
+        });
+        t.start();
+
     }
 
     @EventSubscriber
+
     public void onMessageEvent(MessageReceivedEvent event) throws Exception {
         String message = ("Channel: " + event.getMessage().getChannel().getName() + "/n Message: " + event.getMessage().getAuthor().getName() + ": " + event.getMessage().getContent());
         System.out.println(message);
@@ -117,6 +149,7 @@ public class EventHandler {
         if (!message.getMessage().getMentions().isEmpty()) {
             return message.getMessage().getMentions().get(0).getID().equals(message.getClient().getOurUser().getID());
         }
+
         return false;
     }
 
@@ -140,6 +173,7 @@ public class EventHandler {
                 if (handleSimpleCommand(event, commands)) {
                     return true;
                 }
+
         }
         sendReply(event.getMessage(), "\nUnrecognized command,\nuse !help to see the list of commands");
 
@@ -302,11 +336,14 @@ public class EventHandler {
     private static void sendMessage(IChannel channel, String message) {
         RequestBuffer.request(() -> {
             try {
-                Dbot.logger.log(Level.SEVERE,"msg is: "+ message);
+                Dbot.logger.log(Level.SEVERE, "msg is: " + message);
                 channel.sendMessage(message);
             } catch (DiscordException e) { //| MissingPermissionsException e) {
                 e.printStackTrace();
                 sendMessage(channel, message);
+                if (Dbot.checkInitializedFrame()) {
+                    Dbot.addTextFrame(channel.getID(), message);
+                }
             } catch (MissingPermissionsException e) {
                 e.printStackTrace();
             }
@@ -318,11 +355,14 @@ public class EventHandler {
     private static void sendReply(IMessage recipent, String message) {
         RequestBuffer.request(() -> {
             try {
-                Dbot.logger.log(Level.SEVERE,"reply is: "+ message);
+                Dbot.logger.log(Level.SEVERE, "reply is: " + message);
                 recipent.reply(message);
             } catch (DiscordException e) { //| MissingPermissionsException e) {
                 e.printStackTrace();
                 sendReply(recipent, message);
+                if (Dbot.checkInitializedFrame()) {
+                    Dbot.addTextFrame(recipent.getChannel().getID(), message);
+                }
             } catch (MissingPermissionsException e) {
                 e.printStackTrace();
             }
