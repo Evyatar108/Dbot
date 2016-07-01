@@ -197,10 +197,10 @@ public class botFrame extends javax.swing.JFrame {
         tabInitiationButton.setEnabled(false);
     }//GEN-LAST:event_tabInitiationButtonActionPerformed
 
-    public boolean initializedTabs(){
+    public boolean initializedTabs() {
         return (!tabInitiationButton.isEnabled());
     }
-    
+
     private void sendButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sendButtonActionPerformed
         try {
             int indexOfSelectedGuild = guildsPane.getSelectedIndex();

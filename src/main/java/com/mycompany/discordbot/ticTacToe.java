@@ -25,7 +25,7 @@ import sx.blah.discord.handle.obj.IUser;
  * @author Evyatar M
  */
 public class ticTacToe {
-    
+
     private static String[][] board;
     private static IUser user, otherUser;
     private static boolean state = false;
@@ -36,7 +36,7 @@ public class ticTacToe {
     private static int cooldown = 600;
     private static Map<String, Integer> leaderboard;
     private static Logger tLogger = Logger.getLogger("tLogger");
-    
+
     private static void saveLB() {
         tLogger.log(Level.INFO, "ttt saveLB - handling");
         File file = new File("C:\\Bot\\Resources\\TicTacToeLeaderboard.txt");
@@ -56,7 +56,7 @@ public class ticTacToe {
             tLogger.log(Level.WARNING, "Exception - ttt saveLB " + exc);
         }
     }
-    
+
     private static void loadLB() {
         tLogger.log(Level.INFO, "ttt loadLB - handling");
         File file = new File("C:\\Bot\\Resources\\TicTacToeLeaderboard.txt");
@@ -78,7 +78,7 @@ public class ticTacToe {
             tLogger.log(Level.WARNING, "Exception - ttt loadLB " + exc);
         }
     }
-    
+
     public static void start(IUser userA, IUser userB, IChannel newChannel) {
         tLogger.log(Level.INFO, "ttt start command - handling");
         channel = newChannel;
@@ -95,7 +95,7 @@ public class ticTacToe {
             }
         }
     }
-    
+
     public static String showLeaderboard(IDiscordClient client) {
         tLogger.log(Level.INFO, "ttt show leaderboard command - handling");
         String leaderboardlist = "";
@@ -109,11 +109,11 @@ public class ticTacToe {
             String userName = client.getUserByID(entry.getKey()).getName();
             Integer score = entry.getValue();
             leaderboardlist += userName + " " + score + " points\n";
-            
+
         }
         return leaderboardlist;
     }
-    
+
     private static String checkVictory() {
         tLogger.log(Level.INFO, "ttt checking victory conditions");
         boolean victory = false;
@@ -130,7 +130,7 @@ public class ticTacToe {
             }
             counter = 0;
         }
-        
+
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
                 if (board[j][i].equals(otherSymbol)) {
@@ -143,24 +143,24 @@ public class ticTacToe {
             }
             counter = 0;
         }
-        
+
         if (((board[0][0].equals(otherSymbol)) && (board[1][1].equals(otherSymbol))) && (board[2][2].equals(otherSymbol))) {
             victory = true;
         }
-        
+
         if (((board[2][0].equals(otherSymbol)) && (board[1][1].equals(otherSymbol))) && (board[0][2].equals(otherSymbol))) {
             victory = true;
         }
-        
+
         if (victory) {
             endGame();
             addPoint(otherUser);
             return ("\n" + otherUser.getName() + " is the winner!");
-            
+
         }
         return "";
     }
-    
+
     private static void addPoint(IUser winner) {
         tLogger.log(Level.INFO, "ttt addpoint to the winner");
         if (leaderboard == null) {
@@ -168,29 +168,29 @@ public class ticTacToe {
         }
         if (leaderboard.containsKey(winner.getID())) {
             leaderboard.replace(winner.getID(), leaderboard.get(winner.getID()) + 1);
-            
+
         } else {
             leaderboard.put(winner.getID(), 1);
         }
         saveLB();
     }
-    
+
     public static IChannel getChannel() {
         return channel;
     }
-    
+
     public static boolean getState() {
         return state;
     }
-    
+
     public static IUser getCurrentUser() {
         return user;
     }
-    
+
     public static IUser getOtherUser() {
         return otherUser;
     }
-    
+
     public static String info() {
         tLogger.log(Level.INFO, "ttt info request");
         if (state) {
@@ -198,11 +198,11 @@ public class ticTacToe {
         }
         return ("Start a game first");
     }
-    
+
     public static String help() {
         return ("\n**`!ttt`** `start` `@mention`\n    Starts a new game if no game is active, with the mentioned user\n**`!ttt`** `info`\n    Gives you info about the current game \n**`!ttt`** `*height*` `*width*`\n    height = top/middle/bottom \n    width = left/middle/right \n**`!ttt`** `abort`\n    try to abort the game if 10 minutes passed since it's begining\n**`!ttt`** `giveup`\n    giving up!\n**`!ttt`** `leaderboard`\n    to see the leaderboard");
     }
-    
+
     public static String turn(String height, String width) {
         tLogger.log(Level.INFO, "ttt turn command");
         int a = -1, b = -1;
@@ -214,7 +214,7 @@ public class ticTacToe {
         } else if (height.equals("bottom")) {
             a = 2;
         }
-        
+
         if (width.equals("left")) {
             b = 0;
         } else if (width.equals("middle")) {
@@ -223,7 +223,7 @@ public class ticTacToe {
         if (width.equals("right")) {
             b = 2;
         }
-        
+
         if ((a == -1) || (b == -1)) {
             if (width.equals("top")) {
                 a = 0;
@@ -232,7 +232,7 @@ public class ticTacToe {
             } else if (width.equals("bottom")) {
                 a = 2;
             }
-            
+
             if (height.equals("left")) {
                 b = 0;
             } else if (height.equals("middle")) {
@@ -241,26 +241,26 @@ public class ticTacToe {
             if (height.equals("right")) {
                 b = 2;
             }
-            
+
         }
-        
+
         if ((a == -1) || (b == -1)) {
             return "failed to find height/width";
         }
-        
+
         if (!board[a][b].equals("  ")) {
             return ("This location is already taken");
         } else {
             board[a][b] = currentSymbol;
-            
+
             IUser tempUser = user;
             user = otherUser;
             otherUser = tempUser;
-            
+
             String tempSymbol = currentSymbol;
             currentSymbol = otherSymbol;
             otherSymbol = tempSymbol;
-            
+
             String info = info();
             String check = checkVictory();
             if ((check.equals("")) && (isTie())) {
@@ -270,7 +270,7 @@ public class ticTacToe {
             return (info + "\n" + check);
         }
     }
-    
+
     private static boolean isTie() {
         tLogger.log(Level.INFO, "ttt checking if tie");
         for (int i = 0; i < 3; i++) {
@@ -282,7 +282,7 @@ public class ticTacToe {
         }
         return true;
     }
-    
+
     public static String abort() {
         tLogger.log(Level.INFO, "ttt abort command - handling");
         if (startTime.plusSeconds(cooldown).isBefore(Instant.now())) {
@@ -294,30 +294,30 @@ public class ticTacToe {
         int cooldownSeconds = cooldownLeft % 60;
         return ("There are still " + cooldownMinutes + " minutes and " + cooldownSeconds + " seconds left");
     }
-    
+
     public static String giveUp() {
         tLogger.log(Level.INFO, "ttt give up command - handling");
         endGame();
         addPoint(otherUser);
         return (user.getName() + " gave up, " + otherUser.getName() + " wins!");
     }
-    
+
     public static String giveUpOther() {
         tLogger.log(Level.INFO, "ttt give up other command - handling");
         endGame();
         addPoint(user);
         return (otherUser.getName() + " gave up, " + user.getName() + " wins!");
     }
-    
+
     private static void endGame() {
         tLogger.log(Level.INFO, "ttt end game - handling");
         state = false;
-        
+
     }
-    
+
     public static String board() {
         return ("  " + board[0][0] + "  ⎹⎸  " + board[0][1] + "  ⎹⎸  " + board[0][2] + "  \n———————\n  " + board[1][0] + "  ⎹⎸  " + board[1][1] + "  ⎹⎸  " + board[1][2] + "  \n———————\n  " + board[2][0] + "  ⎹⎸  " + board[2][1] + "  ⎹⎸  " + board[2][2] + "  ");
     }
-    
+
 }
 //
