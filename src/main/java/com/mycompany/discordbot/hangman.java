@@ -9,7 +9,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.HashMap;
@@ -30,7 +29,7 @@ import sx.blah.discord.handle.obj.IUser;
  * @author Evyatar M
  */
 public class hangman {
-
+    
     private static Map<String, Integer> leaderboard;
     private static Set<Character> letters;
     private static boolean state = false;
@@ -39,16 +38,16 @@ public class hangman {
     private static int lives = 10;
     private static String concealedWord = "";
     private static IChannel channel;
-    private static Logger hmLogger;
-
+    private static Logger hmLogger = Logger.getLogger("hmLogger");
+    
     public static String help() {
         return "\n**`!hm`** `start`\n    Starts a new game if no game is active, with a random word\n**`!hm`** `info`\n    Gives you info about the current game \n**`!hm`** `*letter*`\n    (for example \"!hm a\")  \n**`!hm`** `*word*`\n    try the \\*word\\*\n**`!hm`** `leaderboard`\n    to see the leaderboard";
     }
-
+    
     public static boolean getState() {
         return state;
     }
-
+    
     public static String start(IChannel channel) {
         try {
             hmLogger.log(Level.INFO, "hm start command - handling");
@@ -61,22 +60,22 @@ public class hangman {
             concealed = new Character[word.length()];
             for (int i = 0; i < concealed.length; i++) {
                 concealed[i] = '⌴';
-
+                
                 concealedWord += '⌴';
             }
-
+            
             return ("Game started!\n" + hangman.info());
         } catch (Exception exc) {
             Dbot.logger.log(Level.WARNING, "error: " + exc);
         }
         return "failed";
     }
-
+    
     public static String info() {
         hmLogger.log(Level.INFO, "hm info command - handling");
         return ("\nChannel: " + channel.getName() + "\nWord: " + concealedWord + "\nLives: " + lives + "\nUsed Letters: " + hangman.getUsedLetters());
     }
-
+    
     public static String showLeaderboard(IDiscordClient client) {
         hmLogger.log(Level.INFO, "hm showLeaderboard command - handling");
         String leaderboardlist = "";
@@ -90,11 +89,11 @@ public class hangman {
             String userName = client.getUserByID(entry.getKey()).getName();
             Integer score = entry.getValue();
             leaderboardlist += userName + " " + score + " points\n";
-
+            
         }
         return leaderboardlist;
     }
-
+    
     public static String endGame(IUser user, boolean win) {
         hmLogger.log(Level.INFO, "hm endgame - handling");
         String result = "";
@@ -105,7 +104,7 @@ public class hangman {
                 }
                 if (leaderboard.containsKey(user.getID())) {
                     leaderboard.replace(user.getID(), leaderboard.get(user.getID()) + 1);
-
+                    
                 } else {
                     leaderboard.put(user.getID(), 1);
                 }
@@ -114,11 +113,11 @@ public class hangman {
             } else {
                 result = ("Game Over \nThe word was: " + word);
             }
-
+            
         } catch (Exception exc) {
             Dbot.logger.log(Level.WARNING, "error sending message");
         }
-
+        
         state = false;
         word = "";
         concealed = null;
@@ -126,7 +125,7 @@ public class hangman {
         concealedWord = "";
         return result;
     }
-
+    
     public static String tryLetter(Character letter, IMessage message) {
         hmLogger.log(Level.INFO, "hm tryLetter - handling");
         String result = "";
@@ -140,7 +139,7 @@ public class hangman {
                     result += "\n" + (hangman.endGame(message.getAuthor(), false));
                 }
             } else {
-
+                
                 int previndex = 0;
                 int index;
                 while (true) {
@@ -162,15 +161,15 @@ public class hangman {
                 if (word.equals(concealedWord)) {
                     result += "\n" + hangman.endGame(message.getAuthor(), true);
                 }
-
+                
             }
-
+            
         } catch (Exception exc) {
             hmLogger.log(Level.WARNING, "hm Exception - tryLetter " + exc);
         }
         return result;
     }
-
+    
     public static boolean isWord(String tryword) {
         hmLogger.log(Level.INFO, "hm isWord - handling");
         if (word.equals(tryword.toLowerCase())) {
@@ -178,11 +177,11 @@ public class hangman {
         }
         return false;
     }
-
+    
     public static IChannel getChannel() {
         return channel;
     }
-
+    
     private static void saveLB() {
         hmLogger.log(Level.INFO, "hm saveLB - handling");
         File file = new File("C:\\Bot\\Resources\\hangmanLeaderboard.txt");
@@ -203,7 +202,7 @@ public class hangman {
             hmLogger.log(Level.WARNING, "hm Exception - saveLB " + exc);
         }
     }
-
+    
     private static void loadLB() {
         hmLogger.log(Level.INFO, "hm loadLB - handling");
         File file = new File("C:\\Bot\\Resources\\hangmanLeaderboard.txt");
@@ -225,7 +224,7 @@ public class hangman {
             hmLogger.log(Level.WARNING, "hm Exception - loadLB");
         }
     }
-
+    
     public static String getUsedLetters() {
         hmLogger.log(Level.INFO, "hm getUsedLetters - handling");
         String temp = "";
@@ -237,7 +236,7 @@ public class hangman {
         }
         return temp;
     }
-
+    
     private static String getRandWord() {
         String result = "";
         hmLogger.log(Level.INFO, "hm getRandWord - handling");
@@ -258,5 +257,5 @@ public class hangman {
         }
         return result;
     }
-
+    
 }

@@ -25,7 +25,7 @@ public class botFrame extends javax.swing.JFrame {
     private static Map<String, java.awt.TextArea> channels;
     private static String[][] guildsArray;
     private static javax.swing.JTabbedPane[] channelsByGuild;
-    Logger frameLogger;
+    private static Logger frameLogger = Logger.getLogger("Frame Logger");
 
     /**
      * Creates new form botFrame
@@ -38,7 +38,8 @@ public class botFrame extends javax.swing.JFrame {
     }
 
     public void initiateTabs() {
-        frameLogger.log(Level.INFO, "Initializing Frame tabs");
+        frameLogger.log(Level.WARNING, "Initializing Frame tabs");
+        System.out.println("lala");
         guildsArray = new String[client.getGuilds().size()][];
         channelsByGuild = new javax.swing.JTabbedPane[client.getGuilds().size()];
         int i = 0;
@@ -190,6 +191,7 @@ public class botFrame extends javax.swing.JFrame {
 
     private void tabInitiationButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tabInitiationButtonActionPerformed
         initiateTabs();
+        frameLogger.setLevel(Level.ALL);
         tabInitiationButton.setEnabled(false);
     }//GEN-LAST:event_tabInitiationButtonActionPerformed
 

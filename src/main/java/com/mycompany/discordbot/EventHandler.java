@@ -27,10 +27,10 @@ public class EventHandler {
     int cooldownSeconds;
     int cooldownMinutes;
 
-    @EventSubscriber
-    public void onDiscordDisconnectEvents(DiscordDisconnectedEvent event) {
-        Dbot.login();
-    }
+    //@EventSubscriber
+    //public void onDiscordDisconnectEvents(DiscordDisconnectedEvent event) {
+      //  Dbot.login();
+    //}
 
     @EventSubscriber
     public void onReadyEvent(ReadyEvent event) {
@@ -58,7 +58,7 @@ public class EventHandler {
     public void onMessageEvent(MessageReceivedEvent event) throws Exception {
         String message = ("Channel: " + event.getMessage().getChannel().getName() + "/n Message: " + event.getMessage().getAuthor().getName() + ": " + event.getMessage().getContent());
         System.out.println(message);
-        //adding the message to the interface
+    /*    //adding the message to the interface
 
         Dbot.addTextFrame(event.getMessage().getChannel().getID(), event.getMessage().getAuthor().getName() + ": " + event.getMessage().getContent());
         //check for mentions and then commands
@@ -70,7 +70,7 @@ public class EventHandler {
                 }
             }
 
-        }
+        }   */
     }
 
     public static boolean isCommand(MessageReceivedEvent event) {
@@ -185,7 +185,7 @@ public class EventHandler {
                 }
 
             }
-        }
+       }
         return false;
     }
 
