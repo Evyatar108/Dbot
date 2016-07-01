@@ -6,12 +6,20 @@
 package com.mycompany.discordbot;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Random;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.logging.Level;
+import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IUser;
@@ -22,6 +30,7 @@ import sx.blah.discord.handle.obj.IUser;
  */
 public class hangman {
 
+    private static Map<String, Integer> leaderboard;
     private static Set<Character> letters;
     private static boolean state = false;
     private static String word = "";
@@ -30,15 +39,15 @@ public class hangman {
     private static String concealedWord = "";
     private static IChannel channel;
 
-    public static String hangmanHelp() {
-        return "\nhangman commands- \n__hangman start__- starts a new game if no game is active, with a random word\n__hangman info__- gives you info about the current game \n__hangman \\*letter\\*__ (for example \"hangman a\")  \n__hangmanis \\*word\\*__- to try and guess if \\*word\\* is the solution";
+    public static String help() {
+        return "\n**`!hm`** `start`\n    Starts a new game if no game is active, with a random word\n**`!hm`** `info`\n    Gives you info about the current game \n**`!hm`** `*letter*`\n    (for example \"!hm a\")  \n**`!hm`** `*word*`\n    try the \\*word\\*\n**`!hm`** `leaderboard`\n    to see the leaderboard";
     }
 
     public static boolean getState() {
         return state;
     }
 
-    public static void start(IChannel channel) {
+    public static String start(IChannel channel) {
         try {
             state = true;
             hangman.channel = channel;
@@ -53,24 +62,51 @@ public class hangman {
                 concealedWord += '⌴';
             }
 
-            channel.sendMessage("Game started!\n" + hangman.info());
+            return ("Game started!\n" + hangman.info());
         } catch (Exception exc) {
             Dbot.logger.log(Level.WARNING, "error: " + exc);
         }
+        return "failed";
     }
 
     public static String info() {
         return ("\nChannel: " + channel.getName() + "\nWord: " + concealedWord + "\nLives: " + lives + "\nUsed Letters: " + hangman.getUsedLetters());
     }
 
-    public static void endGame(IUser user, boolean win) {
+    public static String showLeaderboard(IDiscordClient client) {
+        String leaderboardlist = "";
+        if (leaderboard == null) {
+            loadLB();
+        }
+        if (leaderboard.isEmpty()) {
+            return ("No scores yet");
+        }
+        for (Map.Entry<String, Integer> entry : leaderboard.entrySet()) {
+            String userName = client.getUserByID(entry.getKey()).getName();
+            Integer score = entry.getValue();
+            leaderboardlist += userName + " " + score + " points\n";
 
+        }
+        return leaderboardlist;
+    }
+
+    public static String endGame(IUser user, boolean win) {
+        String result = "";
         try {
             if (win) {
-                channel.sendMessage(user.mention() + " is the winner!");
+                if (leaderboard == null) {
+                    loadLB();
+                }
+                if (leaderboard.containsKey(user.getID())) {
+                    leaderboard.replace(user.getID(), leaderboard.get(user.getID()) + 1);
 
+                } else {
+                    leaderboard.put(user.getID(), 1);
+                }
+                saveLB();
+                result = (user.mention() + " is the winner!");
             } else {
-                channel.sendMessage("Game Over \nThe word was: " + word);
+                result = ("Game Over \nThe word was: " + word);
             }
 
         } catch (Exception exc) {
@@ -82,17 +118,19 @@ public class hangman {
         concealed = null;
         letters = null;
         concealedWord = "";
+        return result;
     }
 
-    public static void tryLetter(Character letter, IMessage message) {
+    public static String tryLetter(Character letter, IMessage message) {
+        String result = "";
         try {
             if (!(letters.add(letter))) {
                 message.reply(letter + " is already used");
             } else if (word.indexOf(letter) == -1) {
                 lives--;
-                hangman.channel.sendMessage("The word does not contain " + letter + "\nLives: " + lives);
+                result += ("The word does not contain " + letter + "\nLives: " + lives);
                 if (lives == 0) {
-                    hangman.endGame(message.getAuthor(), false);
+                    result += "\n" + (hangman.endGame(message.getAuthor(), false));
                 }
             } else {
 
@@ -113,16 +151,17 @@ public class hangman {
                 for (int i = 0; i < concealed.length; i++) {
                     concealedWord += concealed[i];
                 }
-                hangman.channel.sendMessage("The word contains " + letter + "\n" + hangman.info());
+                result += ("The word contains " + letter + "\n" + hangman.info());
                 if (word.equals(concealedWord)) {
-                    hangman.endGame(message.getAuthor(), true);
+                    result += "\n" + hangman.endGame(message.getAuthor(), true);
                 }
+
             }
 
         } catch (Exception exc) {
             Dbot.logger.log(Level.WARNING, "error: " + exc);
         }
-
+        return result;
     }
 
     public static boolean isWord(String tryword) {
@@ -130,6 +169,47 @@ public class hangman {
             return true;
         }
         return false;
+    }
+
+    public static IChannel getChannel() {
+        return channel;
+    }
+
+    private static void saveLB() {
+        File file = new File("C:\\Bot\\Resources\\hangmanLeaderboard.txt");
+        try {
+            if (!file.exists()) {
+                file.createNewFile();
+            }
+
+            FileOutputStream saveFile = new FileOutputStream("C:\\Bot\\Resources\\hangmanLeaderboard.txt");
+            ObjectOutputStream save = new ObjectOutputStream(saveFile);
+            save.writeObject(leaderboard);
+            save.close();
+            saveFile.close();
+        } catch (IOException ioex) {
+
+        }
+    }
+
+    private static void loadLB() {
+        File file = new File("C:\\Bot\\Resources\\hangmanLeaderboard.txt");
+        try {
+            if (file.exists()) {
+                FileInputStream saveFile = new FileInputStream("C:\\Bot\\Resources\\hangmanLeaderboard.txt");
+                ObjectInputStream save = new ObjectInputStream(saveFile);
+                leaderboard = (HashMap) save.readObject();
+                save.close();
+                saveFile.close();
+            } else {
+                leaderboard = new HashMap<String, Integer>();
+                saveLB();
+            }
+        } catch (IOException ioexc) {
+
+        } catch (ClassNotFoundException cnfexc) {
+
+        }
     }
 
     public static String getUsedLetters() {

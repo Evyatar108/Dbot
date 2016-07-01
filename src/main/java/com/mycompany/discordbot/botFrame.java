@@ -17,7 +17,7 @@ import sx.blah.discord.handle.obj.IGuild;
  * @author Evyatar M
  */
 public class botFrame extends javax.swing.JFrame {
-
+    
     private static IDiscordClient client;
     //   private static Map<String, Map<String, java.awt.TextArea>> guilds;
     private static Map<String, java.awt.TextArea> channels;
@@ -31,9 +31,9 @@ public class botFrame extends javax.swing.JFrame {
         this.client = client;
         initComponents();
         this.guildsPane.removeAll();
-
+        
     }
-
+    
     public void initiateTabs() {
         guildsArray = new String[client.getGuilds().size()][];
         channelsByGuild = new javax.swing.JTabbedPane[client.getGuilds().size()];
@@ -53,7 +53,7 @@ public class botFrame extends javax.swing.JFrame {
                 j++;
             }
             i++;
-
+            
         }
     }
 
@@ -67,13 +67,13 @@ public class botFrame extends javax.swing.JFrame {
     private void initComponents() {
 
         newMessageTextField = new javax.swing.JTextField();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
+        logoutButton = new javax.swing.JButton();
+        loginButton = new javax.swing.JButton();
         guildsPane = new javax.swing.JTabbedPane();
         channelsPane = new javax.swing.JTabbedPane();
         textArea1 = new java.awt.TextArea();
         sendButton = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
+        tabInitiationButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
@@ -85,17 +85,17 @@ public class botFrame extends javax.swing.JFrame {
             }
         });
 
-        jButton1.setText("Logout");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        logoutButton.setText("Logout");
+        logoutButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                logoutButtonActionPerformed(evt);
             }
         });
 
-        jButton2.setText("Login");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
+        loginButton.setText("Login");
+        loginButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
+                loginButtonActionPerformed(evt);
             }
         });
 
@@ -110,10 +110,10 @@ public class botFrame extends javax.swing.JFrame {
             }
         });
 
-        jButton3.setText("Initiate");
-        jButton3.addActionListener(new java.awt.event.ActionListener() {
+        tabInitiationButton.setText("Initiate");
+        tabInitiationButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton3ActionPerformed(evt);
+                tabInitiationButtonActionPerformed(evt);
             }
         });
 
@@ -129,11 +129,11 @@ public class botFrame extends javax.swing.JFrame {
                         .addContainerGap())
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addGap(338, 338, 338)
-                        .addComponent(jButton1)
+                        .addComponent(logoutButton)
                         .addGap(40, 40, 40)
-                        .addComponent(jButton2)
+                        .addComponent(loginButton)
                         .addGap(40, 40, 40)
-                        .addComponent(jButton3)
+                        .addComponent(tabInitiationButton)
                         .addGap(338, 338, 338))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(newMessageTextField)
@@ -145,9 +145,9 @@ public class botFrame extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton1)
-                    .addComponent(jButton2)
-                    .addComponent(jButton3))
+                    .addComponent(logoutButton)
+                    .addComponent(loginButton)
+                    .addComponent(tabInitiationButton))
                 .addGap(10, 10, 10)
                 .addComponent(guildsPane, javax.swing.GroupLayout.PREFERRED_SIZE, 299, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -160,7 +160,7 @@ public class botFrame extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void logoutButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_logoutButtonActionPerformed
         try {
             if (client.isReady()) {
                 client.logout();
@@ -169,23 +169,25 @@ public class botFrame extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(rootPane, exc);
         }
 
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_logoutButtonActionPerformed
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+    private void loginButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loginButtonActionPerformed
         try {
-
+            
             if (!client.isReady()) {
                 client = Dbot.login();
+                
             }
         } catch (Exception exc) {
             JOptionPane.showMessageDialog(rootPane, exc);
         }
 
-    }//GEN-LAST:event_jButton2ActionPerformed
+    }//GEN-LAST:event_loginButtonActionPerformed
 
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+    private void tabInitiationButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tabInitiationButtonActionPerformed
         initiateTabs();
-    }//GEN-LAST:event_jButton3ActionPerformed
+        tabInitiationButton.setEnabled(false);
+    }//GEN-LAST:event_tabInitiationButtonActionPerformed
 
     private void sendButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sendButtonActionPerformed
         try {
@@ -210,17 +212,17 @@ public class botFrame extends javax.swing.JFrame {
      */
     public void addMessages(String channelID, String message) {
         channels.get(channelID).append(message + "\n");
-
+        
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTabbedPane channelsPane;
     private javax.swing.JTabbedPane guildsPane;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
+    private javax.swing.JButton loginButton;
+    private javax.swing.JButton logoutButton;
     private javax.swing.JTextField newMessageTextField;
     private javax.swing.JButton sendButton;
+    private javax.swing.JButton tabInitiationButton;
     private java.awt.TextArea textArea1;
     // End of variables declaration//GEN-END:variables
 }

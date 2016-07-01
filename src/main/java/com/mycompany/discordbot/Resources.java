@@ -18,7 +18,7 @@ import java.util.logging.Level;
 public class Resources {
 
     static String help() {
-        return "The Lord and Savior Junior by Wadru \ncommands:\n__SA__-Information about SA, CBT, coping strategies and more \n__Quote__- quotes to keep you going \n__hangman__-the game";//Each command has a 10min Cooldown to prevent cursoriness and spamming
+        return "\n**`!hm`**\n    the hangman game \n**`!ttt`**\n    TicTacToe game \n**`!quote`**\n    some insight \n**`!sa`**\n    Information about sa and cbt";//Each command has a 10min Cooldown to prevent cursoriness and spamming
 
     }
 
