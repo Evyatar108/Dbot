@@ -131,7 +131,7 @@ public class hangman {
         String result = "";
         try {
             if (!(letters.add(letter))) {
-                message.reply(letter + " is already used");
+                result =(letter + " is already used");
             } else if (word.indexOf(letter) == -1) {
                 lives--;
                 result += ("The word does not contain " + letter + "\nLives: " + lives);

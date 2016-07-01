@@ -11,4 +11,10 @@ package com.mycompany.discordbot.RPG;
  */
 public class Battle {
     
+    public Battle(Player firstP,Player secondP){
+        
+        
+        
+    }
+    
 }

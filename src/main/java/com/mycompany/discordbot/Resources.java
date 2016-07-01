@@ -29,7 +29,7 @@ public class Resources {
 
     public static String love(String name) {; //motivation sentence
         String line = getRandomLine("C:\\Bot\\Resources\\love.txt");
-        line.replaceAll("[@]", name);
+        line = line.replaceAll("[@]", name);
         return line;
 
     }

@@ -54,7 +54,11 @@ public class EventHandler {
     }
 
     public String[] extractCommands(MessageReceivedEvent event) {
-        String args[] = event.getMessage().getContent().trim().split(" ");
+        String content = event.getMessage().getContent();
+        while(content.contains("  ")){
+            content = content.replaceAll("  ", " ");
+        }
+        String args[] = content.trim().split(" ");
         for (int i = 0; i < args.length; i++) {
             args[i] = args[i].toLowerCase();
         }
@@ -117,7 +121,7 @@ public class EventHandler {
     }
 
     private String removeMentions(String message) {
-        return message.replaceAll("<@[0-9]{18}>", "");
+        return message.replaceAll("[<][@][!][0-9]{18}[>]", "");
     }
 
     private boolean handleCommand(MessageReceivedEvent event, String[] commands) {
@@ -298,6 +302,7 @@ public class EventHandler {
     private static void sendMessage(IChannel channel, String message) {
         RequestBuffer.request(() -> {
             try {
+                Dbot.logger.log(Level.SEVERE,"msg is: "+ message);
                 channel.sendMessage(message);
             } catch (DiscordException e) { //| MissingPermissionsException e) {
                 e.printStackTrace();
@@ -313,6 +318,7 @@ public class EventHandler {
     private static void sendReply(IMessage recipent, String message) {
         RequestBuffer.request(() -> {
             try {
+                Dbot.logger.log(Level.SEVERE,"reply is: "+ message);
                 recipent.reply(message);
             } catch (DiscordException e) { //| MissingPermissionsException e) {
                 e.printStackTrace();
