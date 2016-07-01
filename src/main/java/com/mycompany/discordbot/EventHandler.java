@@ -47,6 +47,7 @@ public class EventHandler {
     int cooldownLeft;
     int cooldownSeconds;
     int cooldownMinutes;
+    int timerHours;
     ChatterBotSession botsession;
     ChatterBotSession hiBotSession;
     Map<String, ChatterBotSession> botSessions;
@@ -60,7 +61,7 @@ public class EventHandler {
     public void onReadyEvent(ReadyEvent event) {
 
         Dbot.logger.log(Level.INFO, "The bot is now ready");
-
+        timerHours = 4;
         if (!Dbot.checkInitializedFrame()) {
             Dbot.setFrameClient();
             botSessions = new HashMap<String, ChatterBotSession>();
@@ -85,17 +86,18 @@ public class EventHandler {
                             }
                         }
                         Random rand = new Random();
+                        timerHours = rand.nextInt(7) + 1;
                         IUser chosen = newUserList.get(rand.nextInt(newUserList.size()));
                         String message = chosen.mention();
-                        message +=" "+hiBotSession.think("hi");
+                        message += " " + hiBotSession.think("hi");
                         sendMessage(bottestCH, message);
                     } catch (Exception exc) {
                         Dbot.logger.log(Level.WARNING, "inside error hi message: " + exc);
                     }
 
                 }
-            }, 4*60 * 1000, 4 * 60 * 60 * 1000);
-           
+            }, 4 * 60 * 1000, timerHours * 60 * 60 * 1000);
+
         } catch (Exception exc) {
             Dbot.logger.log(Level.WARNING, "outside error hi message: " + exc);
         }
