@@ -13,10 +13,12 @@ import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.impl.events.DiscordDisconnectedEvent;
 import sx.blah.discord.handle.impl.events.MessageReceivedEvent;
 import sx.blah.discord.handle.impl.events.ReadyEvent;
+import sx.blah.discord.handle.impl.events.MentionEvent;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IPrivateChannel;
 import sx.blah.discord.util.DiscordException;
+import sx.blah.discord.util.MessageBuilder;
 import sx.blah.discord.util.MissingPermissionsException;
 import sx.blah.discord.util.RequestBuffer;
 
@@ -60,6 +62,13 @@ public class EventHandler {
     }
 
     @EventSubscriber
+    public void onMentionEvent(MentionEvent event) {
+        if (event.getMessage().getAuthor().getID().equals("132466660870193153")) {
+            sendMessage(event.getMessage().getChannel(), Resources.love(event.getMessage().getAuthor().getName()));
+        }
+    }
+
+    @EventSubscriber
     public void onMessageEvent(MessageReceivedEvent event) throws Exception {
         String message = ("Channel: " + event.getMessage().getChannel().getName() + "/n Message: " + event.getMessage().getAuthor().getName() + ": " + event.getMessage().getContent());
         System.out.println(message);
@@ -67,11 +76,7 @@ public class EventHandler {
 
         Dbot.addTextFrame(event.getMessage().getChannel().getID(), event.getMessage().getAuthor().getName() + ": " + event.getMessage().getContent());
         //check for mentions and then commands
-        if(mentionMe(event)){
-            if(event.getMessage().getAuthor().getID().equals("132466660870193153")){
-                sendReply(event.getMessage(),"I love you anon <3");
-            }
-        }
+        //    if(mentionMe(event)){
         if (isCommand(event)) {
             if (!(event.getMessage().getChannel() instanceof IPrivateChannel)) {
                 String[] args = extractCommands(event);
@@ -79,7 +84,6 @@ public class EventHandler {
                     handleCommand(event, args);
                 }
             }
-
         }
     }
 
@@ -174,20 +178,6 @@ public class EventHandler {
                     sendMessage(event.getMessage().getChannel(), cooldownReply(commands[0]));
                     return true;
                 }
-
-            }
-
-            case "!board": {
-
-                if (!hasCooldown(commands[0])) {
-                    sendMessage(event.getMessage().getChannel(), ticTacToe.board());
-                    lastTimeUsed.put(commands[0], Instant.now());
-                    return true;
-                } else { //or tell the user how much cooldown is left
-                    sendMessage(event.getMessage().getChannel(), cooldownReply(commands[0]));
-                    return true;
-                }
-
             }
         }
         return false;

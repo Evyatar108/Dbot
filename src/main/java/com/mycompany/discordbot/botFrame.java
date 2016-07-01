@@ -12,6 +12,9 @@ import java.util.logging.Logger;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IGuild;
+import sx.blah.discord.util.DiscordException;
+import sx.blah.discord.util.MissingPermissionsException;
+import sx.blah.discord.util.RequestBuffer;
 
 /**
  *
@@ -20,7 +23,7 @@ import sx.blah.discord.handle.obj.IGuild;
 public class botFrame extends javax.swing.JFrame {
 
     private static IDiscordClient client;
- // private static Map<String, Map<String, java.awt.TextArea>> guilds;
+    // private static Map<String, Map<String, java.awt.TextArea>> guilds;
     private static Map<String, java.awt.TextArea> channels;
     private static String[][] guildsArray;
     private static javax.swing.JTabbedPane[] channelsByGuild;
@@ -200,7 +203,7 @@ public class botFrame extends javax.swing.JFrame {
             int indexOfSelectedCh = channelsByGuild[indexOfSelectedGuild].getSelectedIndex();
             String message = this.newMessageTextField.getText();
             String tempChID = guildsArray[indexOfSelectedGuild][indexOfSelectedCh];
-            client.getChannelByID(tempChID).sendMessage(message);
+            sendMessage(client.getChannelByID(tempChID), message);
             channels.get(tempChID).append(client.getOurUser().getDisplayName(client.getChannelByID(tempChID).getGuild()) + ": " + message + "\n");
             newMessageTextField.setText("");
         } catch (Exception exc) {
@@ -230,4 +233,20 @@ public class botFrame extends javax.swing.JFrame {
     private javax.swing.JButton tabInitiationButton;
     private java.awt.TextArea textArea1;
     // End of variables declaration//GEN-END:variables
+
+    private static void sendMessage(IChannel channel, String message) {
+        RequestBuffer.request(() -> {
+            try {
+                channel.sendMessage(message);
+            } catch (DiscordException e) { //| MissingPermissionsException e) {
+                e.printStackTrace();
+                sendMessage(channel, message);
+            } catch (MissingPermissionsException e) {
+                e.printStackTrace();
+            }
+            return null;
+        });
+
+    }
+
 }

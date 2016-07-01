@@ -27,6 +27,13 @@ public class Resources {
 
     }
 
+    public static String love(String name) {; //motivation sentence
+        String line = getRandomLine("C:\\Bot\\Resources\\love.txt");
+        line.replaceAll("[@]", name);
+        return line;
+
+    }
+
     public static String sa() {; //facts about sa symptoms,causes,biological causes, mental causes
         return getRandomLine("C:\\Bot\\Resources\\SA.txt");
     }
