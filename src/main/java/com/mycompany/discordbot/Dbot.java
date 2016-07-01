@@ -40,17 +40,19 @@ public class Dbot extends JFrame {
             client.getDispatcher().registerListener(new EventHandler());
             //       client.getDispatcher().registerListener(new ReadyEventListener());
         } catch (Exception exc) {
-            logger.log(Level.SEVERE, "failed at login " + exc);
+            logger.log(Level.SEVERE, "Dbot Exception - login " + exc);
         }
         return client;
 
     }
 
     public static void setFrameClient() {
+        logger.log(Level.INFO, "Dbot setFrameClient - handling");
         run();
     }
 
     public static boolean checkInitializedFrame() {
+        logger.log(Level.INFO, "Dbot checkInitializedFrame - handling");
         if (frame != null) {
             return true;
         }
@@ -58,7 +60,7 @@ public class Dbot extends JFrame {
     }
 
     public static void addTextFrame(String channelID, String message) {
-
+        logger.log(Level.INFO, "Dbot addTextFrame - handling");
         frame.addMessages(channelID, message);
 
     }

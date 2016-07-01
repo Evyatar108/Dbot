@@ -14,6 +14,8 @@ import java.io.ObjectOutputStream;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IUser;
@@ -33,45 +35,52 @@ public class ticTacToe {
     private static String otherSymbol = "O";
     private static int cooldown = 600;
     private static Map<String, Integer> leaderboard;
+    private static Logger tLogger;
 
     private static void saveLB() {
+        tLogger.log(Level.INFO, "ttt saveLB - handling");
         File file = new File("C:\\Bot\\Resources\\TicTacToeLeaderboard.txt");
         try {
             if (!file.exists()) {
                 file.createNewFile();
+                tLogger.log(Level.INFO, "ttt saveLB - created file");
             }
-
+            tLogger.log(Level.INFO, "ttt saveLB - savig to file");
             FileOutputStream saveFile = new FileOutputStream("C:\\Bot\\Resources\\TicTacToeLeaderboard.txt");
             ObjectOutputStream save = new ObjectOutputStream(saveFile);
             save.writeObject(leaderboard);
             save.close();
             saveFile.close();
-        } catch (IOException ioex) {
-
+            tLogger.log(Level.INFO, "ttt saveLB - saved to file");
+        } catch (IOException exc) {
+            tLogger.log(Level.WARNING, "Exception - ttt saveLB " + exc);
         }
     }
 
     private static void loadLB() {
+        tLogger.log(Level.INFO, "ttt loadLB - handling");
         File file = new File("C:\\Bot\\Resources\\TicTacToeLeaderboard.txt");
         try {
             if (file.exists()) {
+                tLogger.log(Level.INFO, "ttt loadLB - loading from file");
                 FileInputStream saveFile = new FileInputStream("C:\\Bot\\Resources\\TicTacToeLeaderboard.txt");
                 ObjectInputStream save = new ObjectInputStream(saveFile);
                 leaderboard = (HashMap) save.readObject();
                 save.close();
                 saveFile.close();
+                tLogger.log(Level.INFO, "ttt loadLB - loaded from file");
             } else {
+                tLogger.log(Level.INFO, "ttt loadLB - file doesnt exist");
                 leaderboard = new HashMap<String, Integer>();
                 saveLB();
             }
-        } catch (IOException ioexc) {
-
-        } catch (ClassNotFoundException cnfexc) {
-
+        } catch (Exception exc) {
+            tLogger.log(Level.WARNING, "Exception - ttt loadLB " + exc);
         }
     }
 
     public static void start(IUser userA, IUser userB, IChannel newChannel) {
+        tLogger.log(Level.INFO, "ttt start command - handling");
         channel = newChannel;
         otherUser = userA;
         user = userB;
@@ -88,6 +97,7 @@ public class ticTacToe {
     }
 
     public static String showLeaderboard(IDiscordClient client) {
+        tLogger.log(Level.INFO, "ttt show leaderboard command - handling");
         String leaderboardlist = "";
         if (leaderboard == null) {
             loadLB();
@@ -105,6 +115,7 @@ public class ticTacToe {
     }
 
     private static String checkVictory() {
+        tLogger.log(Level.INFO, "ttt checking victory conditions");
         boolean victory = false;
         int counter = 0;
         for (int i = 0; i < 3; i++) {
@@ -150,7 +161,8 @@ public class ticTacToe {
         return "";
     }
 
-    public static void addPoint(IUser winner) {
+    private static void addPoint(IUser winner) {
+        tLogger.log(Level.INFO, "ttt addpoint to the winner");
         if (leaderboard == null) {
             loadLB();
         }
@@ -180,6 +192,7 @@ public class ticTacToe {
     }
 
     public static String info() {
+        tLogger.log(Level.INFO, "ttt info request");
         if (state) {
             return ("Game is in channel: " + channel.getName() + "\nIts " + user.getName() + "'s turn\nThe other player is " + otherUser.getName() + "\n\n" + board());
         }
@@ -191,6 +204,7 @@ public class ticTacToe {
     }
 
     public static String turn(String height, String width) {
+        tLogger.log(Level.INFO, "ttt turn command");
         int a = -1, b = -1;
         boolean foundHeight = true, foundWidth = true;
         if (height.equals("top")) {
@@ -258,6 +272,7 @@ public class ticTacToe {
     }
 
     private static boolean isTie() {
+        tLogger.log(Level.INFO, "ttt checking if tie");
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
                 if (board[i][j].equals("  ")) {
@@ -269,11 +284,11 @@ public class ticTacToe {
     }
 
     public static String abort() {
+        tLogger.log(Level.INFO, "ttt abort command - handling");
         if (startTime.plusSeconds(cooldown).isBefore(Instant.now())) {
             endGame();
             return ("Game - aborted");
         }
-
         int cooldownLeft = (int) (cooldown - (Instant.now().getEpochSecond() - startTime.getEpochSecond()));
         int cooldownMinutes = cooldownLeft / 60;
         int cooldownSeconds = cooldownLeft % 60;
@@ -281,18 +296,21 @@ public class ticTacToe {
     }
 
     public static String giveUp() {
+        tLogger.log(Level.INFO, "ttt give up command - handling");
         endGame();
         addPoint(otherUser);
         return (user.getName() + " gave up, " + otherUser.getName() + " wins!");
     }
 
     public static String giveUpOther() {
+        tLogger.log(Level.INFO, "ttt give up other command - handling");
         endGame();
         addPoint(user);
         return (otherUser.getName() + " gave up, " + user.getName() + " wins!");
     }
 
-    public static void endGame() {
+    private static void endGame() {
+        tLogger.log(Level.INFO, "ttt end game - handling");
         state = false;
 
     }

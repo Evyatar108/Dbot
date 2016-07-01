@@ -7,6 +7,8 @@ package com.mycompany.discordbot;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.handle.obj.IChannel;
@@ -17,12 +19,13 @@ import sx.blah.discord.handle.obj.IGuild;
  * @author Evyatar M
  */
 public class botFrame extends javax.swing.JFrame {
-    
+
     private static IDiscordClient client;
     //   private static Map<String, Map<String, java.awt.TextArea>> guilds;
     private static Map<String, java.awt.TextArea> channels;
     private static String[][] guildsArray;
     private static javax.swing.JTabbedPane[] channelsByGuild;
+    Logger frameLogger;
 
     /**
      * Creates new form botFrame
@@ -31,10 +34,11 @@ public class botFrame extends javax.swing.JFrame {
         this.client = client;
         initComponents();
         this.guildsPane.removeAll();
-        
+
     }
-    
+
     public void initiateTabs() {
+        frameLogger.log(Level.INFO, "Initializing Frame tabs");
         guildsArray = new String[client.getGuilds().size()][];
         channelsByGuild = new javax.swing.JTabbedPane[client.getGuilds().size()];
         int i = 0;
@@ -53,7 +57,7 @@ public class botFrame extends javax.swing.JFrame {
                 j++;
             }
             i++;
-            
+
         }
     }
 
@@ -166,20 +170,20 @@ public class botFrame extends javax.swing.JFrame {
                 client.logout();
             }
         } catch (Exception exc) {
-            JOptionPane.showMessageDialog(rootPane, exc);
+            frameLogger.log(Level.WARNING, "Exception - Logout button " + exc);
         }
 
     }//GEN-LAST:event_logoutButtonActionPerformed
 
     private void loginButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loginButtonActionPerformed
         try {
-            
+
             if (!client.isReady()) {
                 client = Dbot.login();
-                
+
             }
         } catch (Exception exc) {
-            JOptionPane.showMessageDialog(rootPane, exc);
+            frameLogger.log(Level.WARNING, "Exception - Login button " + exc);
         }
 
     }//GEN-LAST:event_loginButtonActionPerformed
@@ -199,7 +203,7 @@ public class botFrame extends javax.swing.JFrame {
             channels.get(tempChID).append(client.getOurUser().getDisplayName(client.getChannelByID(tempChID).getGuild()) + ": " + message + "\n");
             newMessageTextField.setText("");
         } catch (Exception exc) {
-            JOptionPane.showMessageDialog(rootPane, exc);
+            frameLogger.log(Level.WARNING, "Init");
         }
     }//GEN-LAST:event_sendButtonActionPerformed
 
@@ -212,7 +216,7 @@ public class botFrame extends javax.swing.JFrame {
      */
     public void addMessages(String channelID, String message) {
         channels.get(channelID).append(message + "\n");
-        
+
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

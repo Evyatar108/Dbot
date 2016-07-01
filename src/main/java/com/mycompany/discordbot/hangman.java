@@ -19,6 +19,7 @@ import java.util.Random;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IMessage;
@@ -38,6 +39,7 @@ public class hangman {
     private static int lives = 10;
     private static String concealedWord = "";
     private static IChannel channel;
+    private static Logger hmLogger;
 
     public static String help() {
         return "\n**`!hm`** `start`\n    Starts a new game if no game is active, with a random word\n**`!hm`** `info`\n    Gives you info about the current game \n**`!hm`** `*letter*`\n    (for example \"!hm a\")  \n**`!hm`** `*word*`\n    try the \\*word\\*\n**`!hm`** `leaderboard`\n    to see the leaderboard";
@@ -49,6 +51,7 @@ public class hangman {
 
     public static String start(IChannel channel) {
         try {
+            hmLogger.log(Level.INFO, "hm start command - handling");
             state = true;
             hangman.channel = channel;
             letters = new HashSet<Character>();
@@ -70,10 +73,12 @@ public class hangman {
     }
 
     public static String info() {
+        hmLogger.log(Level.INFO, "hm info command - handling");
         return ("\nChannel: " + channel.getName() + "\nWord: " + concealedWord + "\nLives: " + lives + "\nUsed Letters: " + hangman.getUsedLetters());
     }
 
     public static String showLeaderboard(IDiscordClient client) {
+        hmLogger.log(Level.INFO, "hm showLeaderboard command - handling");
         String leaderboardlist = "";
         if (leaderboard == null) {
             loadLB();
@@ -91,6 +96,7 @@ public class hangman {
     }
 
     public static String endGame(IUser user, boolean win) {
+        hmLogger.log(Level.INFO, "hm endgame - handling");
         String result = "";
         try {
             if (win) {
@@ -122,6 +128,7 @@ public class hangman {
     }
 
     public static String tryLetter(Character letter, IMessage message) {
+        hmLogger.log(Level.INFO, "hm tryLetter - handling");
         String result = "";
         try {
             if (!(letters.add(letter))) {
@@ -159,12 +166,13 @@ public class hangman {
             }
 
         } catch (Exception exc) {
-            Dbot.logger.log(Level.WARNING, "error: " + exc);
+            hmLogger.log(Level.WARNING, "hm Exception - tryLetter " + exc);
         }
         return result;
     }
 
     public static boolean isWord(String tryword) {
+        hmLogger.log(Level.INFO, "hm isWord - handling");
         if (word.equals(tryword.toLowerCase())) {
             return true;
         }
@@ -176,43 +184,50 @@ public class hangman {
     }
 
     private static void saveLB() {
+        hmLogger.log(Level.INFO, "hm saveLB - handling");
         File file = new File("C:\\Bot\\Resources\\hangmanLeaderboard.txt");
         try {
             if (!file.exists()) {
+                hmLogger.log(Level.INFO, "hm  saveLB - file doesnt exist");
                 file.createNewFile();
+                hmLogger.log(Level.INFO, "hm saveLB - file created");
             }
-
+            hmLogger.log(Level.INFO, "hm saveLB - saving to file");
             FileOutputStream saveFile = new FileOutputStream("C:\\Bot\\Resources\\hangmanLeaderboard.txt");
             ObjectOutputStream save = new ObjectOutputStream(saveFile);
             save.writeObject(leaderboard);
             save.close();
             saveFile.close();
-        } catch (IOException ioex) {
-
+            hmLogger.log(Level.INFO, "hm saveLB - saved to file");
+        } catch (Exception exc) {
+            hmLogger.log(Level.WARNING, "hm Exception - saveLB " + exc);
         }
     }
 
     private static void loadLB() {
+        hmLogger.log(Level.INFO, "hm loadLB - handling");
         File file = new File("C:\\Bot\\Resources\\hangmanLeaderboard.txt");
         try {
             if (file.exists()) {
+                hmLogger.log(Level.INFO, "hm loadLB - loading file");
                 FileInputStream saveFile = new FileInputStream("C:\\Bot\\Resources\\hangmanLeaderboard.txt");
                 ObjectInputStream save = new ObjectInputStream(saveFile);
                 leaderboard = (HashMap) save.readObject();
                 save.close();
                 saveFile.close();
+                hmLogger.log(Level.INFO, "hm loadLB - loaded file");
             } else {
+                hmLogger.log(Level.INFO, "hm loadLB - file doesnt exist");
                 leaderboard = new HashMap<String, Integer>();
                 saveLB();
             }
-        } catch (IOException ioexc) {
-
-        } catch (ClassNotFoundException cnfexc) {
-
+        } catch (Exception exc) {
+            hmLogger.log(Level.WARNING, "hm Exception - loadLB");
         }
     }
 
     public static String getUsedLetters() {
+        hmLogger.log(Level.INFO, "hm getUsedLetters - handling");
         String temp = "";
         if (!letters.isEmpty()) {
             for (Character ch : letters) {
@@ -224,9 +239,10 @@ public class hangman {
     }
 
     private static String getRandWord() {
+        String result = "";
+        hmLogger.log(Level.INFO, "hm getRandWord - handling");
         try {
             File f = new File("C:\\Bot\\Resources\\wordlist.txt");
-            String result = null;
             Random rand = new Random();
             int n = 0;
             for (Scanner sc = new Scanner(f); sc.hasNext();) {
@@ -236,12 +252,11 @@ public class hangman {
                     result = line;
                 }
             }
-
-            return result;
+            hmLogger.log(Level.INFO, "hm getRandWord - got random word");
         } catch (FileNotFoundException exc) {
-            Dbot.logger.log(Level.WARNING, "problem with hangman resource file: " + exc);
-            return ("Error?");
+            hmLogger.log(Level.WARNING, "hm Exception - getRandWord " + exc);
         }
+        return result;
     }
 
 }
