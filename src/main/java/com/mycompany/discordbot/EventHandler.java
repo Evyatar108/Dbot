@@ -114,16 +114,17 @@ public class EventHandler {
         return args;
     }
 
-    public void delete(MessageReceivedEvent event) {
+    public void delete(MessageReceivedEvent event, Integer num) {
         MessageList messages = event.getMessage().getChannel().getMessages();
-        messages.setCacheCapacity(1000);
-        try {
+        /*   try {
+            messages.setCacheCapacity(1000);
             messages.load(900);
         } catch (Exception exc) {
             Dbot.logger.log(Level.WARNING, exc.toString());
-        };
+        };    */
         for (IMessage message : messages) {
             if (message.getAuthor().equals(event.getClient().getOurUser())) {
+                num--;
                 RequestBuffer.request(() -> {
                     try {
                         message.delete();
@@ -131,6 +132,9 @@ public class EventHandler {
                         Dbot.logger.log(Level.SEVERE, exc.toString());
                     }
                 });
+                if (num < 1) {
+                    break;
+                }
             }
         }
 
@@ -317,13 +321,23 @@ public class EventHandler {
         if (commands.length > 1) {
             switch (commands[1]) {
                 case "delete": {
-                    delete(event);
-                    return true;
+                    if ((commands.length == 3) && (isNumeric(commands[2]))) {
+                        delete(event, Integer.parseInt(commands[2]));
+                        return true;
+                    }
                 }
-
             }
         }
         return false;
+    }
+
+    public static boolean isNumeric(String str) {
+        try {
+            int d = Integer.parseInt(str);
+        } catch (NumberFormatException nfe) {
+            return false;
+        }
+        return true;
     }
 
     private boolean handleHangmanCommand(MessageReceivedEvent event, String[] commands) {
@@ -392,23 +406,23 @@ public class EventHandler {
 
                 sendReply(event.getMessage(), "\nGame is already in progress \n" + ticTacToe.info());
                 return true;
-                
+
             } else if ((!event.getMessage().getMentions().isEmpty()) && (commands.length == 3)) {
                 if (!event.getMessage().getAuthor().equals(event.getMessage().getMentions().get(0))) {
                     ticTacToe.start(event.getMessage().getAuthor(), event.getMessage().getMentions().get(0), event.getMessage().getChannel());
                     sendMessage(event.getMessage().getChannel(), "Game started!\n" + ticTacToe.info());
                     return true;
-                    
+
                 } else {
                     sendReply(event.getMessage(), "You are not allowed to play with yourself");
                     return true;
                 }
-                
+
             } else {
                 sendReply(event.getMessage(), "Wrong parameters (example- \"!ttt start @mentionFriend\"");
                 return true;
             }
-            
+
         } else if (commands[1].equals("info")) {
             sendMessage(event.getMessage().getChannel(), ticTacToe.info());
             return true;
@@ -416,10 +430,10 @@ public class EventHandler {
         } else if (commands[1].equals("abort")) {
             sendMessage(event.getMessage().getChannel(), ticTacToe.abort());
             return true;
-            
+
         } else if (commands[1].equals("leaderboard")) {
             sendMessage(event.getMessage().getChannel(), ticTacToe.showLeaderboard(event.getClient()));
-            
+
         } else if (ticTacToe.getState()) {
             if (event.getMessage().getChannel().equals(ticTacToe.getChannel())) {
                 if ((commands.length == 2) && (commands[1].equals("giveup"))) {
