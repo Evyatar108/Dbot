@@ -30,6 +30,7 @@ import sx.blah.discord.handle.obj.IPrivateChannel;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.handle.obj.Presences;
 import sx.blah.discord.util.DiscordException;
+import sx.blah.discord.util.MessageList;
 import sx.blah.discord.util.MissingPermissionsException;
 import sx.blah.discord.util.RequestBuffer;
 
@@ -78,7 +79,7 @@ public class EventHandler {
                         List<IUser> newUserList = new ArrayList<IUser>();
                         for (IUser user : userList) {
                             Presences pres = user.getPresence();
-                            if (pres.equals(Presences.ONLINE)) {
+                            if ((pres.equals(Presences.ONLINE)) && (!user.equals(event.getClient().getOurUser()))) {
                                 newUserList.add(user);
                             }
                         }
@@ -86,14 +87,13 @@ public class EventHandler {
                         timerHours = rand.nextInt(7) + 1;
                         IUser chosen = newUserList.get(rand.nextInt(newUserList.size()));
                         String message = chosen.mention();
-                        message += " " + hiBotSession.think("hi");
+                        message += " " + hiBotSession.think("hello");
                         sendMessage(bottestCH, message);
                     } catch (Exception exc) {
                         Dbot.logger.log(Level.WARNING, "inside error hi message: " + exc);
                     }
-
                 }
-            }, 4 * 60 * 1000, timerHours * 60 * 60 * 1000);
+            }, 4 * 60 * 60 * 1000, timerHours * 60 * 60 * 1000);
 
         } catch (Exception exc) {
             Dbot.logger.log(Level.WARNING, "outside error hi message: " + exc);
@@ -114,43 +114,65 @@ public class EventHandler {
         return args;
     }
 
+    public void delete(MessageReceivedEvent event) {
+        MessageList messages = event.getMessage().getChannel().getMessages();
+        messages.setCacheCapacity(1000);
+        try {
+            messages.load(900);
+        } catch (Exception exc) {
+            Dbot.logger.log(Level.WARNING, exc.toString());
+        };
+        for (IMessage message : messages) {
+            if (message.getAuthor().equals(event.getClient().getOurUser())) {
+                RequestBuffer.request(() -> {
+                    try {
+                        message.delete();
+                    } catch (Exception exc) {
+                        Dbot.logger.log(Level.SEVERE, exc.toString());
+                    }
+                });
+            }
+        }
+
+    }
+
     @EventSubscriber
     public void onMentionEvent(MentionEvent event) {
-        String botMessage;
+        if (!isCommand(event.getMessage().getContent())) {
+            String botMessage;
 
-        Thread t = new Thread(new Runnable() {
-            @Override
-            public void run() {
-
-                try {
-                    Thread.sleep(1500);
-                    event.getMessage().getChannel().toggleTypingStatus();
-                    Thread.sleep(4000);
-                    if (event.getMessage().getAuthor().getID().equals("132466660870193153")) {
-                        sendMessage(event.getMessage().getChannel(), Resources.love(event.getMessage().getAuthor().getName()));
-                    } else {
-                        String botMessage = replaceMentions(event.getMessage().getContent());
-                        if (botSessions.containsKey(event.getMessage().getAuthor().getID())) {
-                            botsession = botSessions.get(event.getMessage().getAuthor().getID());
+            Thread t = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        Thread.sleep(1500);
+                        event.getMessage().getChannel().toggleTypingStatus();
+                        Thread.sleep(4000);
+                        if (event.getMessage().getAuthor().getID().equals("132466660870193153")) {
+                            sendMessage(event.getMessage().getChannel(), Resources.love(event.getMessage().getAuthor().getName()));
                         } else {
-                            try {
-                                ChatterBotFactory factory = new ChatterBotFactory();
-                                ChatterBot bot = factory.create(ChatterBotType.CLEVERBOT);
-                                botsession = bot.createSession();
-                                botSessions.put(event.getMessage().getAuthor().getID(), botsession);
-                            } catch (Exception exc) {
-                                Dbot.logger.log(Level.SEVERE, exc.toString());
+                            String botMessage = replaceMentions(event.getMessage().getContent());
+                            if (botSessions.containsKey(event.getMessage().getAuthor().getID())) {
+                                botsession = botSessions.get(event.getMessage().getAuthor().getID());
+                            } else {
+                                try {
+                                    ChatterBotFactory factory = new ChatterBotFactory();
+                                    ChatterBot bot = factory.create(ChatterBotType.CLEVERBOT);
+                                    botsession = bot.createSession();
+                                    botSessions.put(event.getMessage().getAuthor().getID(), botsession);
+                                } catch (Exception exc) {
+                                    Dbot.logger.log(Level.SEVERE, exc.toString());
+                                }
                             }
+                            sendReply(event.getMessage(), botsession.think(botMessage));
                         }
-                        sendReply(event.getMessage(), botsession.think(botMessage));
+                    } catch (Exception exc) {
+                        Dbot.logger.log(Level.WARNING, "Failed to send bot message" + exc.toString());
                     }
-                } catch (Exception exc) {
-                    Dbot.logger.log(Level.WARNING, "Failed to send bot message" + exc.toString());
                 }
-            }
-        });
-        t.start();
-
+            });
+            t.start();
+        }
     }
 
     @EventSubscriber
@@ -163,7 +185,7 @@ public class EventHandler {
         Dbot.addTextFrame(event.getMessage().getChannel().getID(), event.getMessage().getAuthor().getName() + ": " + event.getMessage().getContent());
         //check for mentions and then commands
         //    if(mentionMe(event)){
-        if (isCommand(event)) {
+        if (isCommand(event.getMessage().getContent())) {
             if (!(event.getMessage().getChannel() instanceof IPrivateChannel)) {
                 String[] args = extractCommands(event);
                 if (args.length > 0) {
@@ -173,8 +195,8 @@ public class EventHandler {
         }
     }
 
-    public static boolean isCommand(MessageReceivedEvent event) {
-        if (event.getMessage().getContent().charAt(0) == '!') {
+    public static boolean isCommand(String msg) {
+        if (msg.charAt(0) == '!') {
             return true;
         }
         return false;
@@ -224,6 +246,14 @@ public class EventHandler {
                     return true;
                 }
             }
+
+            case "!wadru": {
+                if (event.getMessage().getAuthor().getID().equals("141211567973728256")) {
+                    if (handleAdminCommand(event, commands)) {
+                        return true;
+                    }
+                }
+            }
             default:
                 if (handleSimpleCommand(event, commands)) {
                     return true;
@@ -271,6 +301,26 @@ public class EventHandler {
                     sendMessage(event.getMessage().getChannel(), cooldownReply(commands[0]));
                     return true;
                 }
+            }
+
+            case "!image": {
+                if (commands.length == 2) {
+                    sendMessage(event.getMessage().getChannel(), event.getMessage().getMentions().get(0).getAvatarURL());
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean handleAdminCommand(MessageReceivedEvent event, String[] commands) {
+        if (commands.length > 1) {
+            switch (commands[1]) {
+                case "delete": {
+                    delete(event);
+                    return true;
+                }
+
             }
         }
         return false;
@@ -342,30 +392,34 @@ public class EventHandler {
 
                 sendReply(event.getMessage(), "\nGame is already in progress \n" + ticTacToe.info());
                 return true;
+                
             } else if ((!event.getMessage().getMentions().isEmpty()) && (commands.length == 3)) {
                 if (!event.getMessage().getAuthor().equals(event.getMessage().getMentions().get(0))) {
                     ticTacToe.start(event.getMessage().getAuthor(), event.getMessage().getMentions().get(0), event.getMessage().getChannel());
                     sendMessage(event.getMessage().getChannel(), "Game started!\n" + ticTacToe.info());
                     return true;
+                    
                 } else {
                     sendReply(event.getMessage(), "You are not allowed to play with yourself");
                     return true;
                 }
+                
             } else {
                 sendReply(event.getMessage(), "Wrong parameters (example- \"!ttt start @mentionFriend\"");
                 return true;
             }
+            
         } else if (commands[1].equals("info")) {
-
             sendMessage(event.getMessage().getChannel(), ticTacToe.info());
             return true;
 
         } else if (commands[1].equals("abort")) {
             sendMessage(event.getMessage().getChannel(), ticTacToe.abort());
             return true;
-
+            
         } else if (commands[1].equals("leaderboard")) {
             sendMessage(event.getMessage().getChannel(), ticTacToe.showLeaderboard(event.getClient()));
+            
         } else if (ticTacToe.getState()) {
             if (event.getMessage().getChannel().equals(ticTacToe.getChannel())) {
                 if ((commands.length == 2) && (commands[1].equals("giveup"))) {

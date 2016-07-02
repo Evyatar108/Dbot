@@ -18,7 +18,7 @@ import java.util.logging.Level;
 public class Resources {
 
     static String help() {
-        return "\n**`!hm`**\n    the hangman game \n**`!ttt`**\n    TicTacToe game \n**`!quote`**\n    some insight \n**`!sa`**\n    Information about sa and cbt";//Each command has a 10min Cooldown to prevent cursoriness and spamming
+        return "\n**`!hm`**\n    the hangman game \n**`!ttt`**\n    TicTacToe game \n**`!quote`**\n    some insight \n**`!sa`**\n    Information about sa and cbt\n**`!image`** `@mention`\n    full profile image of the mentioned user";//Each command has a 10min Cooldown to prevent cursoriness and spamming
 
     }
 
