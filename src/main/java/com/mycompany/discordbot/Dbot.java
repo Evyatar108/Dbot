@@ -19,7 +19,6 @@ import sx.blah.discord.api.IDiscordClient;
  */
 public class Dbot extends JFrame {
 
-    static Scanner sc;
     static IDiscordClient client;
     static String token;
     static Logger logger = Logger.getLogger("Junior's Log");
@@ -33,13 +32,14 @@ public class Dbot extends JFrame {
     public static IDiscordClient login() {
         try {
             logger.setLevel(Level.ALL);
-            sc = new Scanner(new File("C:\\Bot\\Resources\\Token.txt"));
+            Scanner sc = new Scanner(new File("C:\\Bot\\Resources\\Token.txt"));
             token = sc.nextLine();
+            sc.close();
             client = new ClientBuilder().withToken(token).login();
             client.getDispatcher().registerListener(new EventHandler());
             //       client.getDispatcher().registerListener(new ReadyEventListener());
         } catch (Exception exc) {
-            logger.log(Level.SEVERE, "Dbot Exception - login " + exc);
+            logger.log(Level.SEVERE, "Dbot Exception - login \n" + exc);
         }
         return client;
 
@@ -60,7 +60,7 @@ public class Dbot extends JFrame {
 
     public static void addTextFrame(String channelID, String message) {
         logger.log(Level.INFO, "Dbot addTextFrame - handling");
-        if (frame.initializedTabs()) {
+        if ((checkInitializedFrame())&&(frame.initializedTabs())) {
             frame.addMessages(channelID, message);
         }
 

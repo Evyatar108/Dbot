@@ -332,10 +332,13 @@ public class EventHandler {
     }
 
     public static boolean isNumeric(String str) {
-        try {
-            int d = Integer.parseInt(str);
-        } catch (NumberFormatException nfe) {
+        if (str == null) {
             return false;
+        }
+        for (char c : str.toCharArray()) {
+            if (c < '0' || c > '9') {
+                return false;
+            }
         }
         return true;
     }
@@ -479,7 +482,8 @@ public class EventHandler {
         RequestBuffer.request(() -> {
             try {
                 Dbot.logger.log(Level.SEVERE, "reply is: " + message);
-                recipent.reply(message);
+              //  recipent.reply(message);
+                recipent.getChannel().sendMessage(recipent.getAuthor().mention()+" "+message);
             } catch (DiscordException e) { //| MissingPermissionsException e) {
                 e.printStackTrace();
                 sendReply(recipent, message);

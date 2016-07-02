@@ -28,7 +28,7 @@ public class Resources {
     }
 
     public static String love(String name) {; //motivation sentence
-        String line = getRandomLine("C:\\Bot\\Resources\\love.txt");
+        String line = getRandomLine("C:\\Bot\\Resources\\anon.txt");
         line = line.replaceAll("[@]", name);
         return line;
 
@@ -38,9 +38,6 @@ public class Resources {
         return getRandomLine("C:\\Bot\\Resources\\SA.txt");
     }
 
-    public static String depression() {
-        return getRandomLine("C:\\Bot\\Resources\\Depression.txt");
-    }
 
     private static String getRandomLine(String fileLocation) {
         try {

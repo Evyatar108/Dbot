@@ -41,7 +41,6 @@ public class botFrame extends javax.swing.JFrame {
 
     public void initiateTabs() {
         frameLogger.log(Level.WARNING, "Initializing Frame tabs");
-        System.out.println("lala");
         guildsArray = new String[client.getGuilds().size()][];
         channelsByGuild = new javax.swing.JTabbedPane[client.getGuilds().size()];
         int i = 0;
