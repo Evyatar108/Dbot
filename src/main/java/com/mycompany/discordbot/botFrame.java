@@ -92,6 +92,7 @@ public class botFrame extends javax.swing.JFrame {
         });
 
         logoutButton.setText("Logout");
+        logoutButton.setEnabled(false);
         logoutButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 logoutButtonActionPerformed(evt);
@@ -99,6 +100,7 @@ public class botFrame extends javax.swing.JFrame {
         });
 
         loginButton.setText("Login");
+        loginButton.setEnabled(false);
         loginButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 loginButtonActionPerformed(evt);
@@ -181,7 +183,7 @@ public class botFrame extends javax.swing.JFrame {
         try {
 
             if (!client.isReady()) {
-                client = Dbot.login();
+               // client = Dbot.login();
 
             }
         } catch (Exception exc) {
