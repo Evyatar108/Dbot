@@ -18,26 +18,27 @@ import java.util.logging.Level;
 public class Resources {
 
     static String help() {
-        return "\n**`!hm`**\n    the hangman game \n**`!ttt`**\n    TicTacToe game \n**`!quote`**\n    some insight \n**`!sa`**\n    Information about sa and cbt\n**`!image`** `@mention`\n    full profile image of the mentioned user";//Each command has a 10min Cooldown to prevent cursoriness and spamming
+       // return "\n**`!hm`**\n    the hangman game \n**`!ttt`**\n    TicTacToe game \n**`!quote`**\n    some insight \n**`!sa`**\n    Information about sa and cbt\n**`!image`** `@mention`\n    full profile image of the mentioned user";//Each command has a 10min Cooldown to prevent cursoriness and spamming
+          return "\n**`!hm`**\n    the hangman game \n**`!ttt`**\n    TicTacToe game \n**`!image`** `@mention`\n    full profile image of the mentioned user";//Each command has a 10min Cooldown to prevent cursoriness and spamming
 
     }
 
-    public static String quotes() {; //motivation sentence
-        return getRandomLine("C:\\Bot\\Resources\\Quotes.txt");
+    /*public static String quotes() {; //motivation sentence
+        return getRandomLine(System.getProperty("user.home")+"/Documents/Dbot/Quotes.txt");
 
-    }
+    } */
 
-    public static String love(String name) {; //motivation sentence
-        String line = getRandomLine("C:\\Bot\\Resources\\anon.txt");
+   /* public static String love(String name) {; //motivation sentence
+        String line = getRandomLine(System.getProperty("user.home")+"/Documents/Dbot/anon.txt");
         line = line.replaceAll("[@]", name);
         return line;
 
-    }
+    } */
 
-    public static String sa() {; //facts about sa symptoms,causes,biological causes, mental causes
+  /*  public static String sa() {; //facts about sa symptoms,causes,biological causes, mental causes
         return getRandomLine("C:\\Bot\\Resources\\SA.txt");
     }
-
+*/
 
     private static String getRandomLine(String fileLocation) {
         try {

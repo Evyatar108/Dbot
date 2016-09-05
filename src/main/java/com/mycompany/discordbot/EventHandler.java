@@ -152,8 +152,9 @@ public class EventHandler {
                         Thread.sleep(1500);
                         event.getMessage().getChannel().toggleTypingStatus();
                         Thread.sleep(4000);
-                        if (event.getMessage().getAuthor().getID().equals("132466660870193153")) {
-                            sendMessage(event.getMessage().getChannel(), Resources.love(event.getMessage().getAuthor().getName()));
+                        // if (event.getMessage().getAuthor().getID().equals("132466660870193153")) {
+                        //    sendMessage(event.getMessage().getChannel(), Resources.love(event.getMessage().getAuthor().getName()));
+                        if (false) {
                         } else {
                             String botMessage = replaceMentions(event.getMessage().getContent());
                             if (botSessions.containsKey(event.getMessage().getAuthor().getID())) {
@@ -225,7 +226,6 @@ public class EventHandler {
         if (!message.getMessage().getMentions().isEmpty()) {
             return message.getMessage().getMentions().get(0).getID().equals(message.getClient().getOurUser().getID());
         }
-
         return false;
     }
 
@@ -284,7 +284,7 @@ public class EventHandler {
 
             }
 
-            case "!quote": {
+            /*      case "!quote": {
                 if (!hasCooldown(commands[0])) {
                     sendMessage(event.getMessage().getChannel(), Resources.quotes());
                     lastTimeUsed.put(commands[0], Instant.now());
@@ -294,8 +294,8 @@ public class EventHandler {
                     return true;
                 }
             }
-
-            case "!sa": {
+             */
+ /* case "!sa": {
 
                 if (!hasCooldown(commands[0])) {
                     sendMessage(event.getMessage().getChannel(), Resources.sa());
@@ -305,8 +305,7 @@ public class EventHandler {
                     sendMessage(event.getMessage().getChannel(), cooldownReply(commands[0]));
                     return true;
                 }
-            }
-
+            } */
             case "!image": {
                 if (commands.length == 2) {
                     sendMessage(event.getMessage().getChannel(), event.getMessage().getMentions().get(0).getAvatarURL());
@@ -371,7 +370,6 @@ public class EventHandler {
                 }
             } else {
                 sendReply(event.getMessage(), "Start a game first!");
-
                 return true;
             }
         } else if (commands[1].equals("info")) {
@@ -406,7 +404,6 @@ public class EventHandler {
             }
         } else if (commands[1].equals("start")) {
             if (ticTacToe.getState()) {
-
                 sendReply(event.getMessage(), "\nGame is already in progress \n" + ticTacToe.info());
                 return true;
 
@@ -436,7 +433,7 @@ public class EventHandler {
 
         } else if (commands[1].equals("leaderboard")) {
             sendMessage(event.getMessage().getChannel(), ticTacToe.showLeaderboard(event.getClient()));
-
+            return true;
         } else if (ticTacToe.getState()) {
             if (event.getMessage().getChannel().equals(ticTacToe.getChannel())) {
                 if ((commands.length == 2) && (commands[1].equals("giveup"))) {
@@ -482,8 +479,8 @@ public class EventHandler {
         RequestBuffer.request(() -> {
             try {
                 Dbot.logger.log(Level.SEVERE, "reply is: " + message);
-              //  recipent.reply(message);
-                recipent.getChannel().sendMessage(recipent.getAuthor().mention()+" "+message);
+                //  recipent.reply(message);
+                recipent.getChannel().sendMessage(recipent.getAuthor().mention() + " " + message);
             } catch (DiscordException e) { //| MissingPermissionsException e) {
                 e.printStackTrace();
                 sendReply(recipent, message);

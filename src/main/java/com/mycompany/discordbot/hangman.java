@@ -184,7 +184,7 @@ public class hangman {
 
     private static void saveLB() {
         hmLogger.log(Level.INFO, "hm saveLB - handling");
-        File file = new File("C:\\Bot\\Resources\\hangmanLeaderboard.txt");
+        File file = new File(System.getProperty("user.home")+"/Documents/Dbot/hangmanLeaderboard.txt");
         try {
             if (!file.exists()) {
                 hmLogger.log(Level.INFO, "hm  saveLB - file doesnt exist");
@@ -192,7 +192,7 @@ public class hangman {
                 hmLogger.log(Level.INFO, "hm saveLB - file created");
             }
             hmLogger.log(Level.INFO, "hm saveLB - saving to file");
-            FileOutputStream saveFile = new FileOutputStream("C:\\Bot\\Resources\\hangmanLeaderboard.txt");
+            FileOutputStream saveFile = new FileOutputStream(System.getProperty("user.home")+"/Documents/Dbot/hangmanLeaderboard.txt");
             ObjectOutputStream save = new ObjectOutputStream(saveFile);
             save.writeObject(leaderboard);
             save.close();
@@ -205,11 +205,11 @@ public class hangman {
 
     private static void loadLB() {
         hmLogger.log(Level.INFO, "hm loadLB - handling");
-        File file = new File("C:\\Bot\\Resources\\hangmanLeaderboard.txt");
+        File file = new File(System.getProperty("user.home")+"/Documents/Dbot/hangmanLeaderboard.txt");
         try {
             if (file.exists()) {
                 hmLogger.log(Level.INFO, "hm loadLB - loading file");
-                FileInputStream saveFile = new FileInputStream("C:\\Bot\\Resources\\hangmanLeaderboard.txt");
+                FileInputStream saveFile = new FileInputStream(System.getProperty("user.home")+"/Documents/Dbot/hangmanLeaderboard.txt");
                 ObjectInputStream save = new ObjectInputStream(saveFile);
                 leaderboard = (HashMap) save.readObject();
                 save.close();
@@ -241,7 +241,7 @@ public class hangman {
         String result = "";
         hmLogger.log(Level.INFO, "hm getRandWord - handling");
         try {
-            File f = new File("C:\\Bot\\Resources\\wordlist.txt");
+            File f = new File(System.getProperty("user.home")+"/Documents/Dbot/wordlist.txt");
             Random rand = new Random();
             int n = 0;
             for (Scanner sc = new Scanner(f); sc.hasNext();) {

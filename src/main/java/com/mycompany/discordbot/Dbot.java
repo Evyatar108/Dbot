@@ -32,7 +32,8 @@ public class Dbot extends JFrame {
     public static IDiscordClient login() {
         try {
             logger.setLevel(Level.ALL);
-            Scanner sc = new Scanner(new File("C:\\Bot\\Resources\\Token.txt"));
+            System.getProperty("user.home");
+            Scanner sc = new Scanner(new File(System.getProperty("user.home")+"/Documents/Dbot/Token.txt"));
             token = sc.nextLine();
             sc.close();
             client = new ClientBuilder().withToken(token).login();

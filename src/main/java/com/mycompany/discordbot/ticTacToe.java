@@ -39,14 +39,14 @@ public class ticTacToe {
 
     private static void saveLB() {
         tLogger.log(Level.INFO, "ttt saveLB - handling");
-        File file = new File("C:\\Bot\\Resources\\TicTacToeLeaderboard.txt");
+        File file = new File(System.getProperty("user.home")+"/Documents/Dbot/TicTacToeLeaderboard.txt");
         try {
             if (!file.exists()) {
                 file.createNewFile();
                 tLogger.log(Level.INFO, "ttt saveLB - created file");
             }
             tLogger.log(Level.INFO, "ttt saveLB - savig to file");
-            FileOutputStream saveFile = new FileOutputStream("C:\\Bot\\Resources\\TicTacToeLeaderboard.txt");
+            FileOutputStream saveFile = new FileOutputStream(System.getProperty("user.home")+"/Documents/Dbot/TicTacToeLeaderboard.txt");
             ObjectOutputStream save = new ObjectOutputStream(saveFile);
             save.writeObject(leaderboard);
             save.close();
@@ -63,7 +63,7 @@ public class ticTacToe {
         try {
             if (file.exists()) {
                 tLogger.log(Level.INFO, "ttt loadLB - loading from file");
-                FileInputStream saveFile = new FileInputStream("C:\\Bot\\Resources\\TicTacToeLeaderboard.txt");
+                FileInputStream saveFile = new FileInputStream(System.getProperty("user.home")+"/Documents/Dbot/TicTacToeLeaderboard.txt");
                 ObjectInputStream save = new ObjectInputStream(saveFile);
                 leaderboard = (HashMap) save.readObject();
                 save.close();
