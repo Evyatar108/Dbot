@@ -12,7 +12,9 @@ import java.util.logging.Logger;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IGuild;
+import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.util.DiscordException;
+import sx.blah.discord.util.MessageList;
 import sx.blah.discord.util.MissingPermissionsException;
 import sx.blah.discord.util.RequestBuffer;
 
@@ -24,10 +26,12 @@ public class botFrame extends javax.swing.JFrame {
 
     private static IDiscordClient client;
     // private static Map<String, Map<String, java.awt.TextArea>> guilds;
-    private static Map<String, java.awt.TextArea> channels;
-    private static String[][] guildsArray;
-    private static javax.swing.JTabbedPane[] channelsByGuild;
-    private static Logger frameLogger = Logger.getLogger("Frame Logger");
+    private static Map<String, java.awt.TextArea> channelsText;
+    private static String[][] channelsIDArray;
+    private static javax.swing.JTabbedPane[] channelTabs;
+    private static Logger logger = Logger.getLogger("Frame Logger");
+    private boolean initiatedTabs = false;
+    private Map<String, IMessage> lastMessages;
 
     /**
      * Creates new form botFrame
@@ -36,31 +40,83 @@ public class botFrame extends javax.swing.JFrame {
         this.client = client;
         initComponents();
         this.guildsPane.removeAll();
+        lastMessages = new HashMap<String, IMessage>();
+        logger.setLevel(Level.ALL);
 
     }
 
+    public void reloadMessages() {
+        for (String chID : lastMessages.keySet()) {
+            MessageList msgList = client.getChannelByID(chID).getMessages();
+            IMessage lastMsg = lastMessages.get(chID);
+            if (msgList.getEarliestMessage().getCreationDate().isAfter(lastMsg.getCreationDate())) {
+                for (IMessage msg : msgList) {
+                    addMessage(chID, msg);
+                }
+            } else {
+                for (int i = 0; i < msgList.size(); i++) {
+                    if (msgList.get(i).getCreationDate().isEqual(lastMsg.getCreationDate())) {
+                        i += 1; //stop loop
+                        for (; i < msgList.size(); i++) {
+                            addMessage(chID, msgList.get(i));
+                        }
+                        assert i == msgList.size();
+                    }
+                }
+            }
+
+        }
+    }
+
+    public void loadStartMessages() {
+        for (String[] guild : channelsIDArray) {
+            for (String channelID : guild) {
+                MessageList messageList = client.getChannelByID(channelID).getMessages();
+                for (int i = 0; i < messageList.size(); i++) {
+                    addMessage(channelID, messageList.get(i));
+                }
+            }
+        }
+    }
+
+    public void loadMessages(IChannel ch){
+        MessageList messageList = ch.getMessages();
+                for (int i = 0; i < messageList.size(); i++) {
+                    addMessage(ch.getID(), messageList.get(i));
+                }
+    }
+
     public void initiateTabs() {
-        frameLogger.log(Level.WARNING, "Initializing Frame tabs");
-        guildsArray = new String[client.getGuilds().size()][];
-        channelsByGuild = new javax.swing.JTabbedPane[client.getGuilds().size()];
         int i = 0;
-        channels = new HashMap<String, java.awt.TextArea>();
-        for (IGuild guild : client.getGuilds()) {
-            guildsArray[i] = new String[guild.getChannels().size()];
+        
+        channelsIDArray = new String[client.getGuilds().size()][];
+        channelTabs = new javax.swing.JTabbedPane[client.getGuilds().size()];
+        channelsText = new HashMap<String, java.awt.TextArea>();
+         for (IGuild guild : client.getGuilds()) {
+            channelsIDArray[i] = new String[guild.getChannels().size()];
             javax.swing.JTabbedPane newGuildTab = new javax.swing.JTabbedPane();
             guildsPane.add(guild.getName(), newGuildTab);
-            channelsByGuild[i] = newGuildTab;
+            channelTabs[i] = newGuildTab;
             int j = 0;
             for (IChannel ch : guild.getChannels()) {
-                guildsArray[i][j] = ch.getID();
+                channelsIDArray[i][j] = ch.getID();
                 java.awt.TextArea channelTextArea = new java.awt.TextArea();
-                channels.put(ch.getID(), channelTextArea);
+                channelsText.put(ch.getID(), channelTextArea);
                 newGuildTab.add(ch.getName(), channelTextArea);
                 j++;
             }
             i++;
 
-        }
+        } 
+         java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                loadStartMessages();
+            }
+
+        });
+        
+        initiatedTabs = true;
+        logoutButton.setEnabled(true);
     }
 
     /**
@@ -79,7 +135,6 @@ public class botFrame extends javax.swing.JFrame {
         channelsPane = new javax.swing.JTabbedPane();
         textArea1 = new java.awt.TextArea();
         sendButton = new javax.swing.JButton();
-        tabInitiationButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
@@ -118,13 +173,6 @@ public class botFrame extends javax.swing.JFrame {
             }
         });
 
-        tabInitiationButton.setText("Initiate");
-        tabInitiationButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                tabInitiationButtonActionPerformed(evt);
-            }
-        });
-
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -136,13 +184,11 @@ public class botFrame extends javax.swing.JFrame {
                         .addComponent(guildsPane)
                         .addContainerGap())
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(338, 338, 338)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 338, Short.MAX_VALUE)
                         .addComponent(logoutButton)
                         .addGap(40, 40, 40)
                         .addComponent(loginButton)
-                        .addGap(40, 40, 40)
-                        .addComponent(tabInitiationButton)
-                        .addGap(338, 338, 338))
+                        .addGap(463, 463, 463))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(newMessageTextField)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -154,8 +200,7 @@ public class botFrame extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(logoutButton)
-                    .addComponent(loginButton)
-                    .addComponent(tabInitiationButton))
+                    .addComponent(loginButton))
                 .addGap(10, 10, 10)
                 .addComponent(guildsPane, javax.swing.GroupLayout.PREFERRED_SIZE, 299, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -170,49 +215,44 @@ public class botFrame extends javax.swing.JFrame {
 
     private void logoutButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_logoutButtonActionPerformed
         try {
-            if (client.isReady()) {
-                client.logout();
+            client.logout();
+            logoutButton.setEnabled(false);
+            loginButton.setEnabled(true);
+            Dbot.setLoggedOut(true);
+        } catch (Exception e) {
+            // <editor-fold defaultstate="collapsed" desc="Stack trace frame">
+            StringBuilder sb = new StringBuilder(e.toString());
+            for (StackTraceElement ste : e.getStackTrace()) {
+                sb.append("\n\tat ");
+                sb.append(ste);
             }
-        } catch (Exception exc) {
-            frameLogger.log(Level.WARNING, "Exception - Logout button " + exc);
+            String trace = sb.toString();
+            logger.log(Level.WARNING, "botFrame Exception - logoutButton \n " + trace);
+            // </editor-fold>
         }
 
     }//GEN-LAST:event_logoutButtonActionPerformed
 
-    private void loginButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loginButtonActionPerformed
-        try {
-
-            if (!client.isReady()) {
-               // client = Dbot.login();
-
-            }
-        } catch (Exception exc) {
-            frameLogger.log(Level.WARNING, "Exception - Login button " + exc);
-        }
-
-    }//GEN-LAST:event_loginButtonActionPerformed
-
-    private void tabInitiationButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tabInitiationButtonActionPerformed
-        initiateTabs();
-        frameLogger.setLevel(Level.ALL);
-        tabInitiationButton.setEnabled(false);
-    }//GEN-LAST:event_tabInitiationButtonActionPerformed
-
-    public boolean initializedTabs() {
-        return (!tabInitiationButton.isEnabled());
-    }
 
     private void sendButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sendButtonActionPerformed
         try {
             int indexOfSelectedGuild = guildsPane.getSelectedIndex();
-            int indexOfSelectedCh = channelsByGuild[indexOfSelectedGuild].getSelectedIndex();
+            int indexOfSelectedCh = channelTabs[indexOfSelectedGuild].getSelectedIndex();
             String message = this.newMessageTextField.getText();
-            String tempChID = guildsArray[indexOfSelectedGuild][indexOfSelectedCh];
+            String tempChID = channelsIDArray[indexOfSelectedGuild][indexOfSelectedCh];
             sendMessage(client.getChannelByID(tempChID), message);
-            channels.get(tempChID).append(client.getOurUser().getDisplayName(client.getChannelByID(tempChID).getGuild()) + ": " + message + "\n");
+            channelsText.get(tempChID).append(client.getOurUser().getDisplayName(client.getChannelByID(tempChID).getGuild()) + ": " + message + "\n");
             newMessageTextField.setText("");
-        } catch (Exception exc) {
-            frameLogger.log(Level.WARNING, "Init");
+        } catch (Exception e) {
+            // <editor-fold defaultstate="collapsed" desc="Stack trace frame">
+            StringBuilder sb = new StringBuilder(e.toString());
+            for (StackTraceElement ste : e.getStackTrace()) {
+                sb.append("\n\tat ");
+                sb.append(ste);
+            }
+            String trace = sb.toString();
+            logger.log(Level.WARNING, "botFrame Exception - sendAction \n " + trace);
+            // </editor-fold>
         }
     }//GEN-LAST:event_sendButtonActionPerformed
 
@@ -220,12 +260,34 @@ public class botFrame extends javax.swing.JFrame {
         this.sendButtonActionPerformed(evt);
     }//GEN-LAST:event_newMessageTextFieldActionPerformed
 
+    private void loginButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loginButtonActionPerformed
+        try {
+            client.login();
+            loginButton.setEnabled(false);
+            logoutButton.setEnabled(true);
+            Dbot.setLoggedOut(false);
+
+        } catch (Exception e) {
+            // <editor-fold defaultstate="collapsed" desc="Stack trace frame">
+            StringBuilder sb = new StringBuilder(e.toString());
+            for (StackTraceElement ste : e.getStackTrace()) {
+                sb.append("\n\tat ");
+                sb.append(ste);
+            }
+            String trace = sb.toString();
+            logger.log(Level.WARNING, "botFrame Exception - loginButton \n " + trace);
+            // </editor-fold>
+        }
+    }//GEN-LAST:event_loginButtonActionPerformed
+
     /**
      * @param args the command line arguments
      */
-    public void addMessages(String channelID, String message) {
-        channels.get(channelID).append(message + "\n");
-
+    public void addMessage(String channelID, IMessage msg) {
+        if (initiatedTabs) {
+            channelsText.get(channelID).append(msg.getAuthor().getName() + ": " + msg.getContent() + "\n");
+            lastMessages.put(channelID, msg);
+        }
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -235,19 +297,35 @@ public class botFrame extends javax.swing.JFrame {
     private javax.swing.JButton logoutButton;
     private javax.swing.JTextField newMessageTextField;
     private javax.swing.JButton sendButton;
-    private javax.swing.JButton tabInitiationButton;
     private java.awt.TextArea textArea1;
     // End of variables declaration//GEN-END:variables
 
-    private static void sendMessage(IChannel channel, String message) {
+    private void sendMessage(IChannel channel, String message) {
         RequestBuffer.request(() -> {
             try {
-                channel.sendMessage(message);
+                IMessage msg = channel.sendMessage(message);
+                addMessage(channel.getID(), msg);
             } catch (DiscordException e) { //| MissingPermissionsException e) {
-                e.printStackTrace();
+                // <editor-fold defaultstate="collapsed" desc="Stack trace frame">
+                StringBuilder sb = new StringBuilder(e.toString());
+                for (StackTraceElement ste : e.getStackTrace()) {
+                    sb.append("\n\tat ");
+                    sb.append(ste);
+                }
+                String trace = sb.toString();
+                logger.log(Level.WARNING, "botFrame Exception - sendMessage.. Trying again\n " + trace);
+                // </editor-fold>
                 sendMessage(channel, message);
             } catch (MissingPermissionsException e) {
-                e.printStackTrace();
+                // <editor-fold defaultstate="collapsed" desc="Stack trace frame">
+                StringBuilder sb = new StringBuilder(e.toString());
+                for (StackTraceElement ste : e.getStackTrace()) {
+                    sb.append("\n\tat ");
+                    sb.append(ste);
+                }
+                String trace = sb.toString();
+                logger.log(Level.WARNING, "botFrame Exception - sendMessage \n " + trace);
+                // </editor-fold>
             }
             return null;
         });

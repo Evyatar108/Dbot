@@ -10,12 +10,15 @@ import java.io.FileNotFoundException;
 import java.util.Random;
 import java.util.Scanner;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
  * @author Evyatar
  */
 public class Resources {
+    
+    private static Logger logger = Logger.getLogger("Resources");
 
     static String help() {
        // return "\n**`!hm`**\n    the hangman game \n**`!ttt`**\n    TicTacToe game \n**`!quote`**\n    some insight \n**`!sa`**\n    Information about sa and cbt\n**`!image`** `@mention`\n    full profile image of the mentioned user";//Each command has a 10min Cooldown to prevent cursoriness and spamming
@@ -56,7 +59,7 @@ public class Resources {
 
             return result;
         } catch (FileNotFoundException exc) {
-            Dbot.logger.log(Level.WARNING, "problem with resource file: " + fileLocation + " error: " + exc);
+            logger.log(Level.WARNING, "problem with resource file: " + fileLocation + " error: " + exc);
             return ("Error?");
         }
     }

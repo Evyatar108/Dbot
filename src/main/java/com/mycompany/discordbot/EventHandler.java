@@ -9,6 +9,7 @@ import com.google.code.chatterbotapi.ChatterBot;
 import com.google.code.chatterbotapi.ChatterBotFactory;
 import com.google.code.chatterbotapi.ChatterBotSession;
 import com.google.code.chatterbotapi.ChatterBotType;
+import java.util.logging.Logger;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,6 +34,10 @@ import sx.blah.discord.util.DiscordException;
 import sx.blah.discord.util.MessageList;
 import sx.blah.discord.util.MissingPermissionsException;
 import sx.blah.discord.util.RequestBuffer;
+import sx.blah.discord.handle.impl.events.ChannelCreateEvent;
+import sx.blah.discord.handle.impl.events.DiscordReconnectedEvent;
+import sx.blah.discord.handle.impl.events.ChannelUpdateEvent;
+import sx.blah.discord.util.MessageList.MessageListEventListener;
 
 /**
  *
@@ -40,69 +45,103 @@ import sx.blah.discord.util.RequestBuffer;
  */
 public class EventHandler {
 
-    Map<String, Instant> lastTimeUsed = new HashMap<String, Instant>();
-    int cooldown = 10;
-    int cooldownLeft;
-    int cooldownSeconds;
-    int cooldownMinutes;
-    int timerHours;
-    ChatterBotSession botsession;
-    ChatterBotSession hiBotSession;
-    Map<String, ChatterBotSession> botSessions;
+    private Map<String, Instant> lastTimeUsed = new HashMap<String, Instant>();
+    private int cooldown = 10;
+    private int cooldownLeft;
+    private int cooldownSeconds;
+    private int cooldownMinutes;
+    private int timerHours;
+    private ChatterBotSession botsession;
+    private ChatterBotSession hiBotSession;
+    private Map<String, ChatterBotSession> botSessions;
+    private static Logger logger = Logger.getLogger("EventHandler");
+    private boolean firstTime = true;
+    private boolean firstMsg = true;
 
     @EventSubscriber
     public void onDiscordDisconnectEvents(DiscordDisconnectedEvent event) {
-        Dbot.login();
+      /*  if (Dbot.getLoggedOut()) {
+            Dbot.reLogin();
+        } 
+      */
     }
-
+    
+    public void onReconnect(DiscordReconnectedEvent event){
+        Dbot.reloadMessages();
+    }
+    
+   /* @EventSubscriber
+    public void onChannelCreation(ChannelCreateEvent event){
+        Dbot.loadMessagesOnChannel(event.getChannel());
+    }
+    */
     @EventSubscriber
     public void onReadyEvent(ReadyEvent event) {
-
-        Dbot.logger.log(Level.INFO, "The bot is now ready");
+        logger.setLevel(Level.ALL);
+        logger.log(Level.INFO, "The bot is now ready");
         timerHours = 4;
-        if (!Dbot.checkInitializedFrame()) {
-            Dbot.setFrameClient();
+        if (firstTime) {
+            firstTime = false;
+            Dbot.initiate();
             botSessions = new HashMap<String, ChatterBotSession>();
+            autoHiTimer(event);
+            //  event.getClient().changeUsername("Junior");
+            //   doSomething();
         }
-        try {
-            ChatterBotFactory factory = new ChatterBotFactory();
-            ChatterBot bot = factory.create(ChatterBotType.CLEVERBOT);
-            hiBotSession = bot.createSession();
-            Timer timer = new Timer();
-            timer.scheduleAtFixedRate(new TimerTask() {
-                @Override
-                public void run() {
-                    try {
-                        IChannel bottestCH = event.getClient().getChannelByID("183641161448161280");
-                        Object[] tempUserList = event.getClient().getGuildByID("165140401332813824").getUsers().toArray();
-                        IUser[] userList = Arrays.copyOf(tempUserList, tempUserList.length, IUser[].class);
-                        List<IUser> newUserList = new ArrayList<IUser>();
-                        for (IUser user : userList) {
-                            Presences pres = user.getPresence();
-                            if ((pres.equals(Presences.ONLINE)) && (!user.equals(event.getClient().getOurUser()))) {
-                                newUserList.add(user);
-                            }
-                        }
-                        Random rand = new Random();
-                        timerHours = rand.nextInt(7) + 1;
-                        IUser chosen = newUserList.get(rand.nextInt(newUserList.size()));
-                        String message = chosen.mention();
-                        message += " " + hiBotSession.think("hello");
-                        sendMessage(bottestCH, message);
-                    } catch (Exception exc) {
-                        Dbot.logger.log(Level.WARNING, "inside error hi message: " + exc);
-                    }
+    }
+    
+    private void autoHiTimer(ReadyEvent event){
+            try {
+                Timer timer = new Timer();
+                timer.scheduleAtFixedRate(new TimerTask() {
+                    @Override
+                    public void run() {
+                        try {
+            IChannel bottestCH = event.getClient().getChannelByID("183641161448161280");
+            Object[] tempUserList = event.getClient().getGuildByID("165140401332813824").getUsers().toArray();
+            IUser[] userList = Arrays.copyOf(tempUserList, tempUserList.length, IUser[].class);
+            List<IUser> newUserList = new ArrayList<IUser>();
+            for (IUser user : userList) {
+                Presences pres = user.getPresence();
+                if ((pres.equals(Presences.ONLINE)) && (!user.equals(event.getClient().getOurUser()))) {
+                    newUserList.add(user);
                 }
-            }, 4 * 60 * 60 * 1000, timerHours * 60 * 60 * 1000);
-
-        } catch (Exception exc) {
-            Dbot.logger.log(Level.WARNING, "outside error hi message: " + exc);
+            }
+            Random rand = new Random();
+            timerHours = rand.nextInt(7) + 1;
+            IUser chosen = newUserList.get(rand.nextInt(newUserList.size()));
+            String message = chosen.mention();
+            message += " " + hiBotSession.think("hello");
+            sendMessage(bottestCH, message);
+        } catch (Exception e) {
+            // <editor-fold defaultstate="collapsed" desc="Stack trace frame">
+            StringBuilder sb = new StringBuilder(e.toString());
+            for (StackTraceElement ste : e.getStackTrace()) {
+                sb.append("\n\tat ");
+                sb.append(ste);
+            }
+            String trace = sb.toString();
+            logger.log(Level.WARNING, "Event Handler Exception - autoHelloGreeting \n " + trace);
+            // </editor-fold>
         }
-        //  event.getClient().changeUsername("Junior");
-        //   doSomething();
+                    }
+                }, 4 * 60 * 60 * 1000, timerHours * 60 * 60 * 1000);
+
+            } catch (Exception e) {
+                // <editor-fold defaultstate="collapsed" desc="Stack trace frame">
+                StringBuilder sb = new StringBuilder(e.toString());
+                for (StackTraceElement ste : e.getStackTrace()) {
+                    sb.append("\n\tat ");
+                    sb.append(ste);
+                }
+                String trace = sb.toString();
+                logger.log(Level.WARNING, "Event Handler Exception - onReady \n " + trace);
+                // </editor-fold>
+            }
     }
 
-    public String[] extractCommands(MessageReceivedEvent event) {
+
+    private String[] extractCommands(MessageReceivedEvent event) {
         String content = event.getMessage().getContent();
         while (content.contains("  ")) {
             content = content.replaceAll("  ", " ");
@@ -114,13 +153,13 @@ public class EventHandler {
         return args;
     }
 
-    public void delete(MessageReceivedEvent event, Integer num) {
+    private void delete(MessageReceivedEvent event, Integer num) {
         MessageList messages = event.getMessage().getChannel().getMessages();
         /*   try {
             messages.setCacheCapacity(1000);
             messages.load(900);
         } catch (Exception exc) {
-            Dbot.logger.log(Level.WARNING, exc.toString());
+            logger.log(Level.WARNING, exc.toString());
         };    */
         for (IMessage message : messages) {
             if (message.getAuthor().equals(event.getClient().getOurUser())) {
@@ -129,7 +168,7 @@ public class EventHandler {
                     try {
                         message.delete();
                     } catch (Exception exc) {
-                        Dbot.logger.log(Level.SEVERE, exc.toString());
+                        logger.log(Level.SEVERE, exc.toString());
                     }
                 });
                 if (num < 1) {
@@ -166,13 +205,21 @@ public class EventHandler {
                                     botsession = bot.createSession();
                                     botSessions.put(event.getMessage().getAuthor().getID(), botsession);
                                 } catch (Exception exc) {
-                                    Dbot.logger.log(Level.SEVERE, exc.toString());
+                                    logger.log(Level.SEVERE, exc.toString());
                                 }
                             }
                             sendReply(event.getMessage(), botsession.think(botMessage));
                         }
-                    } catch (Exception exc) {
-                        Dbot.logger.log(Level.WARNING, "Failed to send bot message" + exc.toString());
+                    } catch (Exception e) {
+                        // <editor-fold defaultstate="collapsed" desc="Stack trace frame">
+                        StringBuilder sb = new StringBuilder(e.toString());
+                        for (StackTraceElement ste : e.getStackTrace()) {
+                            sb.append("\n\tat ");
+                            sb.append(ste);
+                        }
+                        String trace = sb.toString();
+                        logger.log(Level.WARNING, "Event Handler Exception - onMentionEvent \n " + trace);
+                        // </editor-fold>
                     }
                 }
             });
@@ -187,7 +234,7 @@ public class EventHandler {
         System.out.println(message);
         //adding the message to the interface
 
-        Dbot.addTextFrame(event.getMessage().getChannel().getID(), event.getMessage().getAuthor().getName() + ": " + event.getMessage().getContent());
+        Dbot.addTextFrame(event.getMessage().getChannel().getID(), event.getMessage());
         //check for mentions and then commands
         //    if(mentionMe(event)){
         if (isCommand(event.getMessage().getContent())) {
@@ -330,7 +377,7 @@ public class EventHandler {
         return false;
     }
 
-    public static boolean isNumeric(String str) {
+    private static boolean isNumeric(String str) {
         if (str == null) {
             return false;
         }
@@ -459,16 +506,29 @@ public class EventHandler {
     private static void sendMessage(IChannel channel, String message) {
         RequestBuffer.request(() -> {
             try {
-                Dbot.logger.log(Level.SEVERE, "msg is: " + message);
-                channel.sendMessage(message);
+                logger.log(Level.INFO, "msg is: " + message);
+                IMessage msg = channel.sendMessage(message);
             } catch (DiscordException e) { //| MissingPermissionsException e) {
-                e.printStackTrace();
-                sendMessage(channel, message);
-                if (Dbot.checkInitializedFrame()) {
-                    Dbot.addTextFrame(channel.getID(), message);
+                // <editor-fold defaultstate="collapsed" desc="Stack trace frame">
+                StringBuilder sb = new StringBuilder(e.toString());
+                for (StackTraceElement ste : e.getStackTrace()) {
+                    sb.append("\n\tat ");
+                    sb.append(ste);
                 }
+                String trace = sb.toString();
+                logger.log(Level.WARNING, "Event Handler Exception - sendMessage \n " + trace);
+                // </editor-fold>
+                sendMessage(channel, message);
             } catch (MissingPermissionsException e) {
-                e.printStackTrace();
+                // <editor-fold defaultstate="collapsed" desc="Stack trace frame">
+                StringBuilder sb = new StringBuilder(e.toString());
+                for (StackTraceElement ste : e.getStackTrace()) {
+                    sb.append("\n\tat ");
+                    sb.append(ste);
+                }
+                String trace = sb.toString();
+                logger.log(Level.WARNING, "Event Handler Exception - sendMessage \n " + trace);
+                // </editor-fold>
             }
             return null;
         });
@@ -478,17 +538,31 @@ public class EventHandler {
     private static void sendReply(IMessage recipent, String message) {
         RequestBuffer.request(() -> {
             try {
-                Dbot.logger.log(Level.SEVERE, "reply is: " + message);
+                logger.log(Level.INFO, "reply is: " + message);
                 //  recipent.reply(message);
-                recipent.getChannel().sendMessage(recipent.getAuthor().mention() + " " + message);
+                IMessage msg = recipent.getChannel().sendMessage(recipent.getAuthor().mention() + " " + message);
+                Dbot.addTextFrame(recipent.getChannel().getID(), msg);
             } catch (DiscordException e) { //| MissingPermissionsException e) {
-                e.printStackTrace();
-                sendReply(recipent, message);
-                if (Dbot.checkInitializedFrame()) {
-                    Dbot.addTextFrame(recipent.getChannel().getID(), message);
+                // <editor-fold defaultstate="collapsed" desc="Stack trace frame">
+                StringBuilder sb = new StringBuilder(e.toString());
+                for (StackTraceElement ste : e.getStackTrace()) {
+                    sb.append("\n\tat ");
+                    sb.append(ste);
                 }
+                String trace = sb.toString();
+                logger.log(Level.WARNING, "Event Handler Exception - sendReply \n " + trace);
+                // </editor-fold>
+                sendReply(recipent, message);
             } catch (MissingPermissionsException e) {
-                e.printStackTrace();
+                // <editor-fold defaultstate="collapsed" desc="Stack trace frame">
+                StringBuilder sb = new StringBuilder(e.toString());
+                for (StackTraceElement ste : e.getStackTrace()) {
+                    sb.append("\n\tat ");
+                    sb.append(ste);
+                }
+                String trace = sb.toString();
+                logger.log(Level.WARNING, "Event Handler Exception - sendReply \n " + trace);
+                // </editor-fold>
             }
             return null;
         });

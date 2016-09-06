@@ -38,7 +38,7 @@ public class hangman {
     private static int lives = 10;
     private static String concealedWord = "";
     private static IChannel channel;
-    private static Logger hmLogger = Logger.getLogger("hmLogger");
+    private static Logger logger = Logger.getLogger("hangman");
 
     public static String help() {
         return "\n**`!hm`** `start`\n    Starts a new game if no game is active, with a random word\n**`!hm`** `info`\n    Gives you info about the current game \n**`!hm`** `*letter*`\n    (for example \"!hm a\")  \n**`!hm`** `*word*`\n    try the \\*word\\*\n**`!hm`** `leaderboard`\n    to see the leaderboard";
@@ -50,7 +50,7 @@ public class hangman {
 
     public static String start(IChannel channel) {
         try {
-            hmLogger.log(Level.INFO, "hm start command - handling");
+            logger.log(Level.INFO, "hm start command - handling");
             state = true;
             hangman.channel = channel;
             letters = new HashSet<Character>();
@@ -65,19 +65,27 @@ public class hangman {
             }
 
             return ("Game started!\n" + hangman.info());
-        } catch (Exception exc) {
-            Dbot.logger.log(Level.WARNING, "error: " + exc);
+        } catch (Exception e) {
+            // <editor-fold defaultstate="collapsed" desc="Stack trace frame">
+            StringBuilder sb = new StringBuilder(e.toString());
+            for (StackTraceElement ste : e.getStackTrace()) {
+                sb.append("\n\tat ");
+                sb.append(ste);
+            }
+            String trace = sb.toString();
+            logger.log(Level.WARNING, "hangman Exception - start \n " + trace);
+            // </editor-fold>
         }
         return "failed";
     }
 
     public static String info() {
-        hmLogger.log(Level.INFO, "hm info command - handling");
+        logger.log(Level.INFO, "hm info command - handling");
         return ("\nChannel: " + channel.getName() + "\nWord: " + concealedWord + "\nLives: " + lives + "\nUsed Letters: " + hangman.getUsedLetters());
     }
 
     public static String showLeaderboard(IDiscordClient client) {
-        hmLogger.log(Level.INFO, "hm showLeaderboard command - handling");
+        logger.log(Level.INFO, "hm showLeaderboard command - handling");
         String leaderboardlist = "";
         if (leaderboard == null) {
             loadLB();
@@ -94,20 +102,23 @@ public class hangman {
         return leaderboardlist;
     }
 
+    public static void addPoint(String id, int points) {
+        if (leaderboard == null) {
+            loadLB();
+        }
+        if (leaderboard.containsKey(id)) {
+            leaderboard.replace(id, leaderboard.get(id) + points);
+        } else {
+            leaderboard.put(id, points);
+        }
+    }
+
     public static String endGame(IUser user, boolean win) {
-        hmLogger.log(Level.INFO, "hm endgame - handling");
+        logger.log(Level.INFO, "hm endgame - handling");
         String result = "";
         try {
             if (win) {
-                if (leaderboard == null) {
-                    loadLB();
-                }
-                if (leaderboard.containsKey(user.getID())) {
-                    leaderboard.replace(user.getID(), leaderboard.get(user.getID()) + 1);
-
-                } else {
-                    leaderboard.put(user.getID(), 1);
-                }
+                addPoint(user.getID(), 1);
                 saveLB();
                 result = (user.mention() + " is the winner!");
             } else {
@@ -115,7 +126,7 @@ public class hangman {
             }
 
         } catch (Exception exc) {
-            Dbot.logger.log(Level.WARNING, "error sending message");
+            logger.log(Level.WARNING, "error sending message");
         }
 
         state = false;
@@ -127,7 +138,7 @@ public class hangman {
     }
 
     public static String tryLetter(Character letter, IMessage message) {
-        hmLogger.log(Level.INFO, "hm tryLetter - handling");
+        logger.log(Level.INFO, "hm tryLetter - handling");
         String result = "";
         try {
             if (!(letters.add(letter))) {
@@ -164,14 +175,22 @@ public class hangman {
 
             }
 
-        } catch (Exception exc) {
-            hmLogger.log(Level.WARNING, "hm Exception - tryLetter " + exc);
+        } catch (Exception e) {
+            // <editor-fold defaultstate="collapsed" desc="Stack trace frame">
+            StringBuilder sb = new StringBuilder(e.toString());
+            for (StackTraceElement ste : e.getStackTrace()) {
+                sb.append("\n\tat ");
+                sb.append(ste);
+            }
+            String trace = sb.toString();
+            logger.log(Level.WARNING, "hangman Exception - tryLetter \n " + trace);
+            // </editor-fold>
         }
         return result;
     }
 
     public static boolean isWord(String tryword) {
-        hmLogger.log(Level.INFO, "hm isWord - handling");
+        logger.log(Level.INFO, "hm isWord - handling");
         if (word.equals(tryword.toLowerCase())) {
             return true;
         }
@@ -183,50 +202,66 @@ public class hangman {
     }
 
     private static void saveLB() {
-        hmLogger.log(Level.INFO, "hm saveLB - handling");
-        File file = new File(System.getProperty("user.home")+"/Documents/Dbot/hangmanLeaderboard.txt");
+        logger.log(Level.INFO, "hm saveLB - handling");
+        File file = new File(System.getProperty("user.home") + "/Documents/Dbot/hangmanLeaderboard.txt");
         try {
             if (!file.exists()) {
-                hmLogger.log(Level.INFO, "hm  saveLB - file doesnt exist");
+                logger.log(Level.INFO, "hm  saveLB - file doesnt exist");
                 file.createNewFile();
-                hmLogger.log(Level.INFO, "hm saveLB - file created");
+                logger.log(Level.INFO, "hm saveLB - file created");
             }
-            hmLogger.log(Level.INFO, "hm saveLB - saving to file");
-            FileOutputStream saveFile = new FileOutputStream(System.getProperty("user.home")+"/Documents/Dbot/hangmanLeaderboard.txt");
+            logger.log(Level.INFO, "hm saveLB - saving to file");
+            FileOutputStream saveFile = new FileOutputStream(System.getProperty("user.home") + "/Documents/Dbot/hangmanLeaderboard.txt");
             ObjectOutputStream save = new ObjectOutputStream(saveFile);
             save.writeObject(leaderboard);
             save.close();
             saveFile.close();
-            hmLogger.log(Level.INFO, "hm saveLB - saved to file");
-        } catch (Exception exc) {
-            hmLogger.log(Level.WARNING, "hm Exception - saveLB " + exc);
+            logger.log(Level.INFO, "hm saveLB - saved to file");
+        } catch (Exception e) {
+            // <editor-fold defaultstate="collapsed" desc="Stack trace frame">
+            StringBuilder sb = new StringBuilder(e.toString());
+            for (StackTraceElement ste : e.getStackTrace()) {
+                sb.append("\n\tat ");
+                sb.append(ste);
+            }
+            String trace = sb.toString();
+            logger.log(Level.WARNING, "hangman Exception - saveLB \n " + trace);
+            // </editor-fold>
         }
     }
 
     private static void loadLB() {
-        hmLogger.log(Level.INFO, "hm loadLB - handling");
-        File file = new File(System.getProperty("user.home")+"/Documents/Dbot/hangmanLeaderboard.txt");
+        logger.log(Level.INFO, "hm loadLB - handling");
+        File file = new File(System.getProperty("user.home") + "/Documents/Dbot/hangmanLeaderboard.txt");
         try {
             if (file.exists()) {
-                hmLogger.log(Level.INFO, "hm loadLB - loading file");
-                FileInputStream saveFile = new FileInputStream(System.getProperty("user.home")+"/Documents/Dbot/hangmanLeaderboard.txt");
+                logger.log(Level.INFO, "hm loadLB - loading file");
+                FileInputStream saveFile = new FileInputStream(System.getProperty("user.home") + "/Documents/Dbot/hangmanLeaderboard.txt");
                 ObjectInputStream save = new ObjectInputStream(saveFile);
                 leaderboard = (HashMap) save.readObject();
                 save.close();
                 saveFile.close();
-                hmLogger.log(Level.INFO, "hm loadLB - loaded file");
+                logger.log(Level.INFO, "hm loadLB - loaded file");
             } else {
-                hmLogger.log(Level.INFO, "hm loadLB - file doesnt exist");
+                logger.log(Level.INFO, "hm loadLB - file doesnt exist");
                 leaderboard = new HashMap<String, Integer>();
                 saveLB();
             }
-        } catch (Exception exc) {
-            hmLogger.log(Level.WARNING, "hm Exception - loadLB");
+        } catch (Exception e) {
+            // <editor-fold defaultstate="collapsed" desc="Stack trace frame">
+            StringBuilder sb = new StringBuilder(e.toString());
+            for (StackTraceElement ste : e.getStackTrace()) {
+                sb.append("\n\tat ");
+                sb.append(ste);
+            }
+            String trace = sb.toString();
+            logger.log(Level.WARNING, "hangman Exception - loadLB \n " + trace);
+            // </editor-fold>
         }
     }
 
     public static String getUsedLetters() {
-        hmLogger.log(Level.INFO, "hm getUsedLetters - handling");
+        logger.log(Level.INFO, "hm getUsedLetters - handling");
         String temp = "";
         if (!letters.isEmpty()) {
             for (Character ch : letters) {
@@ -239,9 +274,9 @@ public class hangman {
 
     private static String getRandWord() {
         String result = "";
-        hmLogger.log(Level.INFO, "hm getRandWord - handling");
+        logger.log(Level.INFO, "hm getRandWord - handling");
         try {
-            File f = new File(System.getProperty("user.home")+"/Documents/Dbot/wordlist.txt");
+            File f = new File(System.getProperty("user.home") + "/Documents/Dbot/wordlist.txt");
             Random rand = new Random();
             int n = 0;
             for (Scanner sc = new Scanner(f); sc.hasNext();) {
@@ -251,9 +286,17 @@ public class hangman {
                     result = line;
                 }
             }
-            hmLogger.log(Level.INFO, "hm getRandWord - got random word");
-        } catch (FileNotFoundException exc) {
-            hmLogger.log(Level.WARNING, "hm Exception - getRandWord " + exc);
+            logger.log(Level.INFO, "hm getRandWord - got random word");
+        } catch (FileNotFoundException e) {
+            // <editor-fold defaultstate="collapsed" desc="Stack trace frame">
+            StringBuilder sb = new StringBuilder(e.toString());
+            for (StackTraceElement ste : e.getStackTrace()) {
+                sb.append("\n\tat ");
+                sb.append(ste);
+            }
+            String trace = sb.toString();
+            logger.log(Level.WARNING, "hangman Exception - getRandWord \n " + trace);
+            // </editor-fold>
         }
         return result;
     }
