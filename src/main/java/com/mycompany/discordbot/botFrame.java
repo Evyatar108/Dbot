@@ -241,7 +241,7 @@ public class botFrame extends javax.swing.JFrame {
             String message = this.newMessageTextField.getText();
             String tempChID = channelsIDArray[indexOfSelectedGuild][indexOfSelectedCh];
             sendMessage(client.getChannelByID(tempChID), message);
-            channelsText.get(tempChID).append(client.getOurUser().getDisplayName(client.getChannelByID(tempChID).getGuild()) + ": " + message + "\n");
+            //channelsText.get(tempChID).append(client.getOurUser().getDisplayName(client.getChannelByID(tempChID).getGuild()) + ": " + message + "\n");
             newMessageTextField.setText("");
         } catch (Exception e) {
             // <editor-fold defaultstate="collapsed" desc="Stack trace frame">

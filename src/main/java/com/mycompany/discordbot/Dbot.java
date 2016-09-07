@@ -34,9 +34,13 @@ public class Dbot extends JFrame {
         return loggedOut;
     }
 
-    public static void loadStartMessages(){
+    public static void loadStartMessages() {
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
         frame.loadStartMessages();
+            }});
     }
+
     public static void main(String[] args) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
@@ -119,9 +123,12 @@ public class Dbot extends JFrame {
         }
 
     }
-    
-    public static void loadMessagesOnChannel(IChannel ch){
+
+    public static void loadMessagesOnChannel(IChannel ch) {
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
         frame.loadMessages(ch);
+    }});
     }
 
     public static void reLogin() {
@@ -141,10 +148,12 @@ public class Dbot extends JFrame {
     }
 
     public static void reloadMessages() {
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
         frame.reloadMessages();
+            }});
     }
 
-   
     public static boolean checkInitializedFrame() {
         logger.log(Level.INFO, "Dbot checkInitializedFrame - handling");
         if (frame != null) {
@@ -155,14 +164,15 @@ public class Dbot extends JFrame {
 
     public static void addTextFrame(String channelID, IMessage msg) {
         logger.log(Level.INFO, "Dbot addTextFrame - handling");
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
         if (checkInitializedFrame()) {
             frame.addMessage(channelID, msg);
         }
+            }});
     }
 
     public static void initiate() {
-
-        
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
@@ -172,7 +182,5 @@ public class Dbot extends JFrame {
 
         });
     }
-    
-    
 
 }
