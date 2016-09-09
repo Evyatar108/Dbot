@@ -42,7 +42,6 @@ public class botFrame extends javax.swing.JFrame {
         this.guildsPane.removeAll();
         lastMessages = new HashMap<String, IMessage>();
         logger.setLevel(Level.ALL);
-
     }
 
     public void reloadMessages() {
@@ -50,8 +49,8 @@ public class botFrame extends javax.swing.JFrame {
             MessageList msgList = client.getChannelByID(chID).getMessages();
             IMessage lastMsg = lastMessages.get(chID);
             if (msgList.getEarliestMessage().getCreationDate().isAfter(lastMsg.getCreationDate())) {
-                for (IMessage msg : msgList) {
-                    addMessage(chID, msg);
+                for (int i = 0; i < msgList.size(); i++) {
+                    addMessage(chID, msgList.get(i));
                 }
             } else {
                 for (int i = 0; i < msgList.size(); i++) {
@@ -64,35 +63,34 @@ public class botFrame extends javax.swing.JFrame {
                     }
                 }
             }
-
         }
     }
 
     public void loadStartMessages() {
         for (String[] guild : channelsIDArray) {
             for (String channelID : guild) {
-                MessageList messageList = client.getChannelByID(channelID).getMessages();
-                for (int i = 0; i < messageList.size(); i++) {
-                    addMessage(channelID, messageList.get(i));
+                MessageList msgList = client.getChannelByID(channelID).getMessages();
+                for (int i = 0; i < msgList.size(); i++) {
+                    addMessage(channelID, msgList.get(i));
                 }
             }
         }
     }
 
-    public void loadMessages(IChannel ch){
+    public void loadMessages(IChannel ch) {
         MessageList messageList = ch.getMessages();
-                for (int i = 0; i < messageList.size(); i++) {
-                    addMessage(ch.getID(), messageList.get(i));
-                }
+        for (int i = 0; i < messageList.size(); i++) {
+            addMessage(ch.getID(), messageList.get(i));
+        }
     }
 
     public void initiateTabs() {
         int i = 0;
-        
+
         channelsIDArray = new String[client.getGuilds().size()][];
         channelTabs = new javax.swing.JTabbedPane[client.getGuilds().size()];
         channelsText = new HashMap<String, java.awt.TextArea>();
-         for (IGuild guild : client.getGuilds()) {
+        for (IGuild guild : client.getGuilds()) {
             channelsIDArray[i] = new String[guild.getChannels().size()];
             javax.swing.JTabbedPane newGuildTab = new javax.swing.JTabbedPane();
             guildsPane.add(guild.getName(), newGuildTab);
@@ -107,14 +105,14 @@ public class botFrame extends javax.swing.JFrame {
             }
             i++;
 
-        } 
-         java.awt.EventQueue.invokeLater(new Runnable() {
+        }
+        java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 loadStartMessages();
             }
 
         });
-        
+
         initiatedTabs = true;
         logoutButton.setEnabled(true);
     }
