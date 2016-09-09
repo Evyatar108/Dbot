@@ -67,7 +67,7 @@ public class EventHandler {
     }
     
     public void onReconnect(DiscordReconnectedEvent event){
-        Dbot.reloadMessages();
+        //Dbot.reloadMessages();
     }
     
    /* @EventSubscriber
@@ -508,6 +508,7 @@ public class EventHandler {
             try {
                 logger.log(Level.INFO, "msg is: " + message);
                 IMessage msg = channel.sendMessage(message);
+                Dbot.addTextFrame(channel.getID(), msg);
             } catch (DiscordException e) { //| MissingPermissionsException e) {
                 // <editor-fold defaultstate="collapsed" desc="Stack trace frame">
                 StringBuilder sb = new StringBuilder(e.toString());

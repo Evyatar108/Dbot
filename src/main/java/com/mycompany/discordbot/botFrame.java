@@ -70,7 +70,7 @@ public class botFrame extends javax.swing.JFrame {
         for (String[] guild : channelsIDArray) {
             for (String channelID : guild) {
                 MessageList msgList = client.getChannelByID(channelID).getMessages();
-                for (int i = 0; i < msgList.size(); i++) {
+               for (int i = (msgList.size()-1); i >= 0; i--) {
                     addMessage(channelID, msgList.get(i));
                 }
             }
@@ -82,6 +82,7 @@ public class botFrame extends javax.swing.JFrame {
         for (int i = 0; i < messageList.size(); i++) {
             addMessage(ch.getID(), messageList.get(i));
         }
+        
     }
 
     public void initiateTabs() {

@@ -37,7 +37,19 @@ public class Dbot extends JFrame {
     public static void loadStartMessages() {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
+                try{
         frame.loadStartMessages();
+                }catch(Exception e){
+                    // <editor-fold defaultstate="collapsed" desc="Stack trace frame">
+            StringBuilder sb = new StringBuilder(e.toString());
+            for (StackTraceElement ste : e.getStackTrace()) {
+                sb.append("\n\tat ");
+                sb.append(ste);
+            }
+            String trace = sb.toString();
+            logger.log(Level.SEVERE, "Dbot Exception - loadStartMessages \n" + trace);
+            // </editor-fold>
+                }
             }});
     }
 
